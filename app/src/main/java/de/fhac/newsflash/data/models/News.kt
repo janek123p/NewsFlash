@@ -2,10 +2,7 @@ package de.fhac.newsflash.data.models
 
 import java.net.URL
 
-class News(val name: String, private val url: String, val description: String) {
+class News(val name: String, val description: String, val url: String, val imageUrl : String? = null) {
 
-    fun getUrl() : URL {
-        return URL(url);
-    }
 
 }
