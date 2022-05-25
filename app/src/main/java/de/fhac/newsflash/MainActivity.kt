@@ -20,8 +20,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val controller = NewsController();
-        newsList = controller.getNews();
+        newsList = NewsController.getNews();
         newsListAdapter = NewsListAdapter(this, newsList)
         binding.newsList.adapter = newsListAdapter
         newsListAdapter.notifyDataSetChanged()
