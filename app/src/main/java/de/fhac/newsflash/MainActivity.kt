@@ -1,5 +1,7 @@
 package de.fhac.newsflash
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+    private var currentNews : News? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,31 +34,58 @@ class MainActivity : AppCompatActivity() {
         addCallbacks()
     }
 
-    private fun initNewsData(){
+    private fun initNewsData() {
         newsList = NewsController.getNews()
         newsListAdapter = NewsListAdapter(this, newsList)
         binding.newsList.adapter = newsListAdapter
         newsListAdapter.notifyDataSetChanged()
     }
-    private fun initBottomSheetBehavior(){
+
+    private fun initBottomSheetBehavior() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetBinding.bottomSheetRootLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBinding.webContent.webViewClient = WebViewClient()
     }
+
     private fun addCallbacks() {
         bottomSheetBehavior.addBottomSheetCallback(NewsBottomSheetCallback(bottomSheetBinding))
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true){
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                when(bottomSheetBehavior.state){
-                    BottomSheetBehavior.STATE_COLLAPSED -> bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                    BottomSheetBehavior.STATE_EXPANDED -> bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                when (bottomSheetBehavior.state) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> bottomSheetBehavior.state =
+                        BottomSheetBehavior.STATE_HIDDEN
+                    BottomSheetBehavior.STATE_EXPANDED -> bottomSheetBehavior.state =
+                        BottomSheetBehavior.STATE_COLLAPSED
                     else -> this@MainActivity.onBackPressed()
                 }
             }
         })
+        bottomSheetBinding.btResizeMessage.setOnClickListener {
+            when (bottomSheetBehavior.state) {
+                BottomSheetBehavior.STATE_COLLAPSED -> bottomSheetBehavior.state =
+                    BottomSheetBehavior.STATE_EXPANDED
+                BottomSheetBehavior.STATE_EXPANDED -> bottomSheetBehavior.state =
+                    BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+        bottomSheetBinding.btShare.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "NewsFlash")
+            var shareMessage = "\nLies dir diesen Artikel durch:\n\n${currentNews!!.url}"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
+            startActivity(Intent.createChooser(shareIntent, "Über welche Applikation möchtest du den Artikel teilen?"))
+        }
+        bottomSheetBinding.btShowInBrowser.setOnClickListener{
+            val showInBrowserIntent = Intent(Intent.ACTION_VIEW)
+            showInBrowserIntent.data = Uri.parse(currentNews!!.url)
+            startActivity(showInBrowserIntent)
+        }
     }
 
     fun showDetailedNews(news: News) {
+        currentNews = news
+
         bottomSheetBinding.apply {
             txtHeading.text = news.name
             txtShortMessage.text = news.description
