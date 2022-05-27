@@ -38,7 +38,7 @@ object NewsController : Closeable {
         cached += News(
             11,
             "Borussia Dortmund und Cheftrainer Marco Rose trennen sich",
-            "Der Fußball-Bundesligist Borussia Dortmund hat sich überraschend von seinem Cheftrainer Marco Rose getrennt. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit.",
+            "Der Fußball-Bundesligist Borussia Dortmund hat sich überraschend von seinem Cheftrainer Marco Rose getrennt. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit.",
             "https://www.tagesschau.de/regional/nordrheinwestfalen/bvb-trennt-sich-von-trainer-rose-105.html",
             "https://www.tagesschau.de/regional/nordrheinwestfalen/wdr-image-97465~_v-mittel16x9.jpg"
         );
