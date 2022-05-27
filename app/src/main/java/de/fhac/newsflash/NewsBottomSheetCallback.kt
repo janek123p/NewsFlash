@@ -11,8 +11,14 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
 
     override fun onStateChanged(bottomSheet: View, newState: Int) {
         when (newState) {
-            BottomSheetBehavior.STATE_EXPANDED -> setWebContentVisible()
-            BottomSheetBehavior.STATE_COLLAPSED -> setWebContentInvisible()
+            BottomSheetBehavior.STATE_EXPANDED -> {
+                setWebContentVisible()
+                binding.btResizeMessage.setBackgroundResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
+            }
+            BottomSheetBehavior.STATE_COLLAPSED -> {
+                setWebContentInvisible()
+                binding.btResizeMessage.setBackgroundResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
+            }
             BottomSheetBehavior.STATE_DRAGGING -> binding.apply {
                 txtHeading.visibility = View.VISIBLE
                 txtShortMessage.visibility = View.VISIBLE

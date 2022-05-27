@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, "NewsFlash")
             var shareMessage = "\nLies dir diesen Artikel durch:\n\n${currentNews!!.url}"
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
-            startActivity(Intent.createChooser(shareIntent, "Über welche Applikation möchtest du den Artikel teilen?"))
+            startActivity(Intent.createChooser(shareIntent, "Welche App soll verw. werden?"))
         }
         bottomSheetBinding.btShowInBrowser.setOnClickListener{
             val showInBrowserIntent = Intent(Intent.ACTION_VIEW)
