@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.navigation.NavigationBarView
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.databinding.ActivityMainBinding
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
-    private var currentNews : News? = null
+    private var currentNews: News? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +30,28 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
+
         initNewsData()
         initBottomSheetBehavior()
         addCallbacks()
+        addBottomNavigationCallback()
     }
+
+    private fun addBottomNavigationCallback() {
+        binding.bottomNavigation.apply {
+            setOnItemSelectedListener {
+                when (it.itemId) {
+                    R.id.settings -> {
+                        var intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                        startActivity(intent)
+                        return@setOnItemSelectedListener true
+                    }
+                }
+                return@setOnItemSelectedListener false
+            }
+        }
+    }
+
 
     private fun initNewsData() {
         newsList = NewsController.getNews()
@@ -76,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
             startActivity(Intent.createChooser(shareIntent, "Welche App soll verw. werden?"))
         }
-        bottomSheetBinding.btShowInBrowser.setOnClickListener{
+        bottomSheetBinding.btShowInBrowser.setOnClickListener {
             val showInBrowserIntent = Intent(Intent.ACTION_VIEW)
             showInBrowserIntent.data = Uri.parse(currentNews!!.url)
             startActivity(showInBrowserIntent)

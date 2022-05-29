@@ -3,4 +3,9 @@
     <string name="news">Nachrichten</string>
     <string name="fav">Favoriten</string>
     <string name="settings">Einstellungen</string>
+
+    <string name="add_rss_feed">RSS-Feed hinzufügen:</string>
+    <string name="rss_feed_link">Link zu RSS-Feed</string>
+    <string name="add">Hinzufügen</string>
+    <string name="rss_feeds">RSS-Feeds:</string>
 </resources>

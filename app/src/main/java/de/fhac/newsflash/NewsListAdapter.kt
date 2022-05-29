@@ -18,12 +18,12 @@ class NewsListAdapter(
         return data.count()
     }
 
-    override fun getItem(p0: Int): Any {
-        return data[p0]
+    override fun getItem(pos: Int): Any {
+        return data[pos]
     }
 
-    override fun getItemId(p0: Int): Long {
-        return p0.toLong()
+    override fun getItemId(pos: Int): Long {
+        return pos.toLong()
     }
 
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
