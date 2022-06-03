@@ -4,7 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        bottomSheetBinding.btResizeMessage.setOnClickListener {
+        bottomSheetBinding.btResizeNews.setOnClickListener {
             when (bottomSheetBehavior.state) {
                 BottomSheetBehavior.STATE_COLLAPSED -> bottomSheetBehavior.state =
                     BottomSheetBehavior.STATE_EXPANDED
@@ -99,6 +101,10 @@ class MainActivity : AppCompatActivity() {
             val showInBrowserIntent = Intent(Intent.ACTION_VIEW)
             showInBrowserIntent.data = Uri.parse(currentNews!!.url)
             startActivity(showInBrowserIntent)
+        }
+        bottomSheetBinding.btSave.setOnClickListener {
+            NewsController.addFavorite(currentNews!!.id)
+            Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_LONG).show()
         }
     }
 

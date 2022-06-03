@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.RSSSource
 
@@ -16,7 +17,7 @@ class RSSFeedsAdapterAdapter(private val context: Context) : BaseAdapter() {
         updateFeeds()
     }
 
-    private fun updateFeeds(){
+    private fun updateFeeds() {
         feeds = SourceController.getSources().filterIsInstance<RSSSource>().toMutableList()
         notifyDataSetChanged()
     }
@@ -42,7 +43,7 @@ class RSSFeedsAdapterAdapter(private val context: Context) : BaseAdapter() {
         convertView.findViewById<TextView>(R.id.txt_name).text = feed.getName()
         convertView.findViewById<TextView>(R.id.txt_link).text = feed.getUrl().toString()
 
-        convertView.findViewById<Button>(R.id.bt_remove).setOnClickListener{
+        convertView.findViewById<Button>(R.id.bt_remove).setOnClickListener {
             SourceController.deleteSource(feed.id)
             updateFeeds()
         }

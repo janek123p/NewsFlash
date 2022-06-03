@@ -8,4 +8,6 @@
     <string name="rss_feed_link">Link zu RSS-Feed</string>
     <string name="add">Hinzufügen</string>
     <string name="rss_feeds">RSS-Feeds:</string>
+
+    <string name="saved_to_favs">Die Nachricht wurde zu deinen Favoriten hinzugefügt.</string>
 </resources>
