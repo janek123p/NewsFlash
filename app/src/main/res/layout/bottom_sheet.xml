@@ -7,7 +7,8 @@
     app:behavior_hideable="true"
     app:behavior_peekHeight="230dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    android:background="@drawable/rect_rounded_top">
+    android:background="@drawable/rect_rounded_top"
+    android:clickable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
