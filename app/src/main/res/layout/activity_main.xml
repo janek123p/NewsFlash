@@ -9,6 +9,7 @@
     android:background="@color/design_default_color_primary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
