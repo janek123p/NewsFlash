@@ -1,11 +1,21 @@
 package de.fhac.newsflash
 
+import android.content.res.Resources
+import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.databinding.BottomSheetBinding
 
 class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
     BottomSheetBehavior.BottomSheetCallback() {
+
+    val Number.dp
+        get() = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            this.toFloat(),
+            Resources.getSystem().displayMetrics
+        )
 
     private var lastBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -42,6 +52,10 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
                 txtHeading.alpha = 1f - slideOffset
                 txtShortMessage.alpha = 1f - slideOffset
                 imgThumbnail.alpha = 1f - slideOffset
+                if (slideOffset > 0.5) {
+                    var drawable = bottomSheetRootLayout.background as GradientDrawable;
+                    drawable.cornerRadius = (2 * (1 - slideOffset) * 30).dp;
+                }
             }
         } else {
             setWebContentInvisible()
@@ -55,6 +69,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
             txtShortMessage.visibility = View.VISIBLE
             imgThumbnail.visibility = View.VISIBLE
             scrollWebContent.visibility = View.GONE
+            (bottomSheetRootLayout.background as GradientDrawable).cornerRadius = 30.dp
         }
     }
 
@@ -64,6 +79,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
             txtShortMessage.visibility = View.GONE
             imgThumbnail.visibility = View.GONE
             scrollWebContent.visibility = View.VISIBLE
+            (bottomSheetRootLayout.background as GradientDrawable).cornerRadius = 0.dp
         }
     }
 }
