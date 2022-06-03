@@ -2,15 +2,18 @@ package de.fhac.newsflash.data.controller
 
 import android.content.Context
 import androidx.room.Room
+import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
+import de.fhac.newsflash.data.service.RssService
 import java.io.Closeable
 
-object NewsController : Closeable {
+object NewsController {
 
     private var cached: MutableList<News> = mutableListOf();
     private var favorites: MutableList<News> = mutableListOf();
+    private var filter: Filter? = null;
 
     /**
      * Load Database
@@ -44,9 +47,22 @@ object NewsController : Closeable {
         );
     }
 
+    fun setFilter(filter: Filter) {
+        this.filter = filter;
+    }
+
+    fun resetFilter() {
+        filter = null;
+    }
+
     fun getFavorites() = favorites
 
-    fun getNews() = cached
+    fun getNews(): List<News> {
+//        if (cached.isEmpty())
+//            refresh();
+
+        return cached;
+    }
 
     fun addFavorite(id: Int): Boolean {
         if (!cached.any { news -> news.id == id }) return false;
@@ -56,27 +72,16 @@ object NewsController : Closeable {
 
     fun removeFavorite(id: Int) = favorites.removeIf { news -> news.id == id };
 
-    fun getNews(source: ISource): List<News> {
-        var news = mutableListOf<News>();
 
-        for (i in 0..10) {
-            news += (News(
-                i,
-                "Nachricht $i von ${source.getName()}",
-                "Ich bin die Beschreibung der Nachricht $i".repeat(3),
-                source.getUrl().toString(),
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Test-Logo.svg/783px-Test-Logo.svg.png"
-            ));
+    fun refresh() {
+        for (source in SourceController.getSources()) {
+            if(filter != null && filter!!.sources.contains(source)) continue;
+
+            cached.clear();
+
+            var h = {news: List<News> -> cached = news.toMutableList()}
+
+            RssService.parse(source.getUrl().toString(),  h);
         }
-
-        return news;
-    }
-
-
-    /**
-     * Cache all News to Database and close database
-     */
-    override fun close() {
-        TODO("Not yet implemented")
     }
 }
