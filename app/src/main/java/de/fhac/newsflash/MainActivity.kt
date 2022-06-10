@@ -18,9 +18,8 @@ import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var newsList: List<News>
@@ -43,10 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRestart() {
-        runBlocking {
-            NewsController.refresh()
-            newsList = NewsController.getNews()
-        }
+        refreshNewsData()
         super.onRestart()
     }
 
@@ -66,12 +62,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadNewsData() {
-        runBlocking {
-            NewsController.refresh()
-            newsList = NewsController.getNews()
-            newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
-            binding.newsList.adapter = newsListAdapter
-            newsListAdapter.notifyDataSetChanged()
+        GlobalScope.launch {
+            newsList = NewsController.getNews(refresh = false)
+            runOnUiThread {
+                newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
+                binding.newsList.adapter = newsListAdapter
+                newsListAdapter.notifyDataSetChanged()
+            }
+            refreshNewsData()
+        }
+    }
+
+    private fun refreshNewsData(){
+        GlobalScope.launch {
+            newsList = NewsController.getNews(refresh = true)
+            runOnUiThread {
+                newsListAdapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -79,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetBinding.bottomSheetRootLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBinding.webContent.webViewClient = WebViewClient()
-        bottomSheetBinding.webContent.settings.apply{
+        bottomSheetBinding.webContent.settings.apply {
             domStorageEnabled = true
             loadsImagesAutomatically = true
             javaScriptEnabled = true
@@ -135,9 +142,9 @@ class MainActivity : AppCompatActivity() {
             if (news.imageUrl != null) {
                 Glide.with(this@MainActivity).load(news.imageUrl).centerCrop().into(imgThumbnail)
             }
-            if(news in NewsController.getFavorites()){
+            if (news in NewsController.getFavorites()) {
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
-            }else{
+            } else {
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             }
             webScrollView.scrollY = 0
@@ -188,11 +195,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
-            if(news in NewsController.getFavorites()){
+            if (news in NewsController.getFavorites()) {
                 NewsController.removeFavorite(news.id)
-                Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT)
+                    .show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-            }else{
+            } else {
                 NewsController.addFavorite(news.id)
                 Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_SHORT).show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)

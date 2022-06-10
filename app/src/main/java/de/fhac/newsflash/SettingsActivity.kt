@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.webkit.URLUtil
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.databinding.ActivitySettingsBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class SettingsActivity : AppCompatActivity() {
@@ -30,27 +33,35 @@ class SettingsActivity : AppCompatActivity() {
         addOnAddFeedClickedListener()
     }
 
-    private fun setRSSLinkError(message : String){
+    private fun setRSSLinkError(message: String) {
         binding.wrapperTxtLink.isErrorEnabled = true
         binding.wrapperTxtLink.error = message
     }
 
-    private fun clearRSSLinkError(){
+    private fun clearRSSLinkError() {
         binding.wrapperTxtLink.isErrorEnabled = false
     }
 
     private fun addOnAddFeedClickedListener() {
-        binding.btAddRssFeed.setOnClickListener{
-            runBlocking {
-                try{
+        binding.btAddRssFeed.setOnClickListener {
+            binding.loadingIndicator.visibility = View.VISIBLE
+            GlobalScope.launch {
+                try {
                     SourceController.registerSource(binding.txtRssLink.text.toString());
-                    rssFeedListAdapter.updateFeeds();
-                    clearRSSLinkError()
-                    binding.txtRssLink.setText("")
-                }catch(ex: Exception){
-                    setRSSLinkError(ex.message ?: "Unbekannter Fehler");
+                    runOnUiThread {
+                        rssFeedListAdapter.updateFeeds()
+                        clearRSSLinkError()
+                        binding.txtRssLink.setText("")
+                        binding.loadingIndicator.visibility = View.GONE
+                    }
+                } catch (ex: Exception) {
+                    runOnUiThread {
+                        setRSSLinkError(ex.message ?: "Unbekannter Fehler");
+                        binding.loadingIndicator.visibility = View.GONE
+                    }
                 }
             }
         }
+
     }
 }

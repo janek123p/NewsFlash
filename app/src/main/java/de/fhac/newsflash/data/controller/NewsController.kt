@@ -57,8 +57,8 @@ object NewsController {
 
     fun getFavorites() = favorites
 
-    suspend fun getNews(): List<News> {
-        if (cached.isEmpty())
+    suspend fun getNews(refresh : Boolean = false): List<News> {
+        if (cached.isEmpty() || refresh)
             refresh();
 
         return cached;
