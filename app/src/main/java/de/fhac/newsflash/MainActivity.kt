@@ -6,6 +6,7 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -62,22 +63,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadNewsData() {
+        binding.loadingIndicatorTop.visibility = View.VISIBLE
         GlobalScope.launch {
             newsList = NewsController.getNews(refresh = false)
             runOnUiThread {
                 newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
                 binding.newsList.adapter = newsListAdapter
                 newsListAdapter.notifyDataSetChanged()
+                binding.loadingIndicatorTop.visibility = View.GONE
             }
             refreshNewsData()
         }
     }
 
     private fun refreshNewsData(){
+        binding.loadingIndicatorTop.visibility = View.VISIBLE
         GlobalScope.launch {
             newsList = NewsController.getNews(refresh = true)
             runOnUiThread {
                 newsListAdapter.notifyDataSetChanged()
+                binding.loadingIndicatorTop.visibility = View.GONE
             }
         }
     }

@@ -54,7 +54,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
                 txtShortMessage.alpha = 1f - slideOffset
                 imgThumbnail.alpha = 1f - slideOffset
                 if (slideOffset > 0.5) {
-                    var drawable = bottomSheetRootLayout.background as GradientDrawable;
+                    var drawable = mainConstraintLayout.background as GradientDrawable;
                     drawable.cornerRadius = (2 * (1 - slideOffset) * 30).dp;
                 }
             }
@@ -71,7 +71,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
             txtShortMessage.visibility = View.VISIBLE
             imgThumbnail.visibility = View.VISIBLE
             webCardView.visibility = View.GONE
-            (bottomSheetRootLayout.background as GradientDrawable).cornerRadius = 30.dp
+            (mainConstraintLayout.background as GradientDrawable).cornerRadius = 30.dp
         }
     }
 
@@ -81,7 +81,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
             txtShortMessage.visibility = View.GONE
             imgThumbnail.visibility = View.GONE
             webCardView.visibility = View.VISIBLE
-            (bottomSheetRootLayout.background as GradientDrawable).cornerRadius = 0.dp
+            (mainConstraintLayout.background as GradientDrawable).cornerRadius = 0.dp
         }
     }
 }
