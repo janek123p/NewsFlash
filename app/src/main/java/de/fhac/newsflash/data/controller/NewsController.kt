@@ -73,7 +73,7 @@ object NewsController {
     fun removeFavorite(id: Int) = favorites.removeIf { news -> news.id == id };
 
 
-    private suspend fun refresh() {
+    suspend fun refresh() {
         cached.clear();
 
         for (source in SourceController.getSources()) {

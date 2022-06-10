@@ -33,10 +33,10 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
             BottomSheetBehavior.STATE_DRAGGING -> binding.apply {
                 txtHeading.visibility = View.VISIBLE
                 txtShortMessage.visibility = View.VISIBLE
-                scrollWebContent.visibility = View.VISIBLE
+                webCardView.visibility = View.VISIBLE
                 imgThumbnail.visibility = View.VISIBLE
                 when (lastBottomSheetState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> scrollWebContent.alpha = 0f
+                    BottomSheetBehavior.STATE_COLLAPSED -> webCardView.alpha = 0f
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         txtHeading.alpha = 0f; txtShortMessage.alpha = 0f; imgThumbnail.alpha = 0f
                     }
@@ -49,7 +49,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
     override fun onSlide(bottomSheet: View, slideOffset: Float) {
         if (slideOffset > 0) {
             binding.apply {
-                scrollWebContent.alpha = slideOffset
+                webCardView.alpha = slideOffset
                 txtHeading.alpha = 1f - slideOffset
                 txtShortMessage.alpha = 1f - slideOffset
                 imgThumbnail.alpha = 1f - slideOffset
@@ -70,7 +70,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
             txtHeading.visibility = View.VISIBLE
             txtShortMessage.visibility = View.VISIBLE
             imgThumbnail.visibility = View.VISIBLE
-            scrollWebContent.visibility = View.GONE
+            webCardView.visibility = View.GONE
             (bottomSheetRootLayout.background as GradientDrawable).cornerRadius = 30.dp
         }
     }
@@ -80,7 +80,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
             txtHeading.visibility = View.GONE
             txtShortMessage.visibility = View.GONE
             imgThumbnail.visibility = View.GONE
-            scrollWebContent.visibility = View.VISIBLE
+            webCardView.visibility = View.VISIBLE
             (bottomSheetRootLayout.background as GradientDrawable).cornerRadius = 0.dp
         }
     }

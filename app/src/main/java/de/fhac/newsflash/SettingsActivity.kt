@@ -28,25 +28,6 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         addOnAddFeedClickedListener()
-        addCheckRSSFeedInputListener()
-    }
-
-    private fun addCheckRSSFeedInputListener() {
-        binding.txtRssLink.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun afterTextChanged(text : Editable?) {
-                var link = text.toString()
-                if(!URLUtil.isValidUrl(link)){
-                    setRSSLinkError("Ungültige URL!")
-                    return
-                }
-                setRSSLinkValid()
-            }
-
-        })
     }
 
     private fun setRSSLinkError(message : String){
@@ -54,9 +35,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.wrapperTxtLink.error = message
     }
 
-    private fun setRSSLinkValid(){
+    private fun clearRSSLinkError(){
         binding.wrapperTxtLink.isErrorEnabled = false
-        binding.wrapperTxtLink.helperText = "Gültiger RSS-Feed!"
     }
 
     private fun addOnAddFeedClickedListener() {
@@ -65,6 +45,8 @@ class SettingsActivity : AppCompatActivity() {
                 try{
                     SourceController.registerSource(binding.txtRssLink.text.toString());
                     rssFeedListAdapter.updateFeeds();
+                    clearRSSLinkError()
+                    binding.txtRssLink.setText("")
                 }catch(ex: Exception){
                     setRSSLinkError(ex.message ?: "Unbekannter Fehler");
                 }

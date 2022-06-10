@@ -1,6 +1,5 @@
 package de.fhac.newsflash
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -20,6 +19,7 @@ import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,10 +36,18 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
-        initNewsData()
+        loadNewsData()
         initBottomSheet()
         addCallbacks()
         addBottomNavigationCallback()
+    }
+
+    override fun onRestart() {
+        runBlocking {
+            NewsController.refresh()
+            newsList = NewsController.getNews()
+        }
+        super.onRestart()
     }
 
     private fun addBottomNavigationCallback() {
@@ -57,8 +65,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initNewsData() {
+    private fun loadNewsData() {
         runBlocking {
+            NewsController.refresh()
             newsList = NewsController.getNews()
             newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
             binding.newsList.adapter = newsListAdapter
@@ -131,6 +140,7 @@ class MainActivity : AppCompatActivity() {
             }else{
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             }
+            webScrollView.scrollY = 0
 
         }
 

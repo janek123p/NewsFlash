@@ -60,7 +60,7 @@
             app:layout_constraintTop_toBottomOf="@id/txt_heading" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/scroll_web_content"
+            android:id="@+id/web_card_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="10dp"
@@ -74,6 +74,7 @@
             >
 
             <androidx.core.widget.NestedScrollView
+                android:id="@+id/web_scroll_view"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent">
                 <WebView
