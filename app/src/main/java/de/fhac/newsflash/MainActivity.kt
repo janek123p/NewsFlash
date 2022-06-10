@@ -1,5 +1,6 @@
 package de.fhac.newsflash
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -40,6 +41,23 @@ class MainActivity : AppCompatActivity() {
         initBottomSheet()
         addCallbacks()
         addBottomNavigationCallback()
+
+
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState.containsKey("activatedNews")) {
+            val news = savedInstanceState.getParcelable<News>("activatedNews")
+            news?.apply { showDetailedNews(this) }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        currentNews?.apply {
+            outState.putParcelable("activatedNews", this)
+        }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onRestart() {
@@ -76,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun refreshNewsData(){
+    private fun refreshNewsData() {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         GlobalScope.launch {
             newsList = NewsController.getNews(refresh = true)
@@ -87,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetBinding.bottomSheetRootLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -153,7 +172,6 @@ class MainActivity : AppCompatActivity() {
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             }
             webScrollView.scrollY = 0
-
         }
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
