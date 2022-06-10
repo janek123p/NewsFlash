@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             binding.mainConstraintLayout.setRenderEffect(
-                RenderEffect.createBlurEffect(
+                if (value < .1) null else RenderEffect.createBlurEffect(
                     valueInRange * 10f,
                     valueInRange * 10f,
                     Shader.TileMode.MIRROR
@@ -169,6 +168,4 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_LONG).show()
         }
     }
-
-
 }
