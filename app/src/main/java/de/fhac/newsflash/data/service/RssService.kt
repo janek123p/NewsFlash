@@ -37,8 +37,8 @@ object RssService {
     private fun readFeed(parser: XmlPullParser): List<News> {
         val news = mutableListOf<News>();
 
-        parser.require(XmlPullParser.START_TAG, null, "feed")
-        while (parser.next() != XmlPullParser.END_TAG) {
+//        parser.require(XmlPullParser.START_TAG, null, "feed")
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue;
             }
@@ -72,10 +72,10 @@ object RssService {
 
         return News(
             name = title ?: "",
-            description = desc ?: "",
+            description = desc ?: "DEFAULT DESCRIPTION LOREM IMPSUM".repeat(10),
             url = link ?: "",
             imageUrl = imageUrl
-                ?: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.stern.de%2Fpanorama%2F50-jahre-doener--das-wichtigste-zur-deutschen-leibspeise-31721190.html&psig=AOvVaw29slUOHj-h87mvHSOazm-e&ust=1654334553253000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMDhuc_6kPgCFQAAAAAdAAAAABAD"
+                ?: "https://cdn.pixabay.com/photo/2013/07/12/12/58/tv-test-pattern-146649__340.png"
         )
     }
 

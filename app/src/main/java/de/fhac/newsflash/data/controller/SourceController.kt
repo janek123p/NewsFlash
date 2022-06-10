@@ -7,8 +7,8 @@ object SourceController {
 
     private val sources = mutableMapOf<Int, ISource>(
         0 to RSSSource(0, "Tagesschau", "https://www.tagesschau.de/xml/rss2/"),
-        1 to RSSSource(1, "CNN", "http://rss.cnn.com/rss/edition.rss"),
-        2 to RSSSource(2, "ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
+//        1 to RSSSource(1, "CNN", "http://rss.cnn.com/rss/edition.rss"),
+//        2 to RSSSource(2, "ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
     )
 
     fun getSources(): List<ISource> {
