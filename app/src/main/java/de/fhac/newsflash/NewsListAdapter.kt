@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.bumptech.glide.Glide
+import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.News
 
 class NewsListAdapter(
@@ -41,10 +43,8 @@ class NewsListAdapter(
                 Glide.with(context).load(news.imageUrl).into(findViewById(R.id.thumbnail));
             }
 
-            findViewById<TextView>(de.fhac.newsflash.R.id.news_title)
-                .setText(news.name)
-            findViewById<TextView>(de.fhac.newsflash.R.id.news_content)
-                .setText(news.description)
+            findViewById<TextView>(de.fhac.newsflash.R.id.news_title).text = news.name
+            findViewById<TextView>(de.fhac.newsflash.R.id.news_content).text = news.description
         }
     }
 }

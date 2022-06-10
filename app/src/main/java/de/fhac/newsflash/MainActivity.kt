@@ -1,11 +1,13 @@
 package de.fhac.newsflash
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -68,6 +70,12 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetBinding.bottomSheetRootLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBinding.webContent.webViewClient = WebViewClient()
+        bottomSheetBinding.webContent.settings.apply{
+            domStorageEnabled = true
+            loadsImagesAutomatically = true
+            javaScriptEnabled = true
+            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        }
     }
 
     private fun addCallbacks() {
@@ -90,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
         bottomSheetBinding.btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
 
-        bottomSheetBinding.btSave.setOnClickListener { saveCurrentNewsToFavourite() }
+        bottomSheetBinding.btSave.setOnClickListener { saveOrRemoveCurrentNewsToFavorites() }
     }
 
     fun setBackgroundBlurred(value: Float) {
@@ -118,6 +126,12 @@ class MainActivity : AppCompatActivity() {
             if (news.imageUrl != null) {
                 Glide.with(this@MainActivity).load(news.imageUrl).centerCrop().into(imgThumbnail)
             }
+            if(news in NewsController.getFavorites()){
+                btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
+            }else{
+                btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+            }
+
         }
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -162,10 +176,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveCurrentNewsToFavourite() {
+    private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
-            NewsController.addFavorite(news.id)
-            Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_LONG).show()
+            if(news in NewsController.getFavorites()){
+                NewsController.removeFavorite(news.id)
+                Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT).show()
+                bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+            }else{
+                NewsController.addFavorite(news.id)
+                Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_SHORT).show()
+                bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
+            }
         }
     }
 }

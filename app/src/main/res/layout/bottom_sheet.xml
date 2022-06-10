@@ -121,7 +121,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:background="@drawable/ic_baseline_save_alt_24"
+                android:background="@drawable/ic_baseline_star_border_24"
                 android:contentDescription="Save article" />
 
             <Button
