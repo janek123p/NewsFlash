@@ -74,10 +74,10 @@ object NewsController {
 
 
     private suspend fun refresh() {
+        cached.clear();
+
         for (source in SourceController.getSources()) {
             if(filter != null && filter!!.sources.contains(source)) continue;
-
-            cached.clear();
 
             var h = {news: List<News> -> cached = news.toMutableList()}
 

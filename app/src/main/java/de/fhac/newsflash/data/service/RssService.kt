@@ -12,20 +12,22 @@ import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.net.URL
 import kotlinx.coroutines.*;
+import org.jsoup.Jsoup
 import java.security.KeyStore
+import java.util.concurrent.Flow
 
 object RssService {
 
 
-    suspend fun parse(url: String) : List<News> {
-            val one = GlobalScope.async {
-                hallo(url)
-            }
+    suspend fun parse(url: String): List<News> {
+        val one = GlobalScope.async {
+            hallo(url)
+        }
 
-            return one.await();
+        return one.await();
     }
 
-    fun hallo(url: String) : List<News> {
+    fun hallo(url: String): List<News> {
         val parser = Xml.newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         parser.setInput(URL(url).openConnection().getInputStream(), "UTF-8");
@@ -58,6 +60,7 @@ object RssService {
         var link: String? = null;
         var imageUrl: String? = null;
 
+
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
                 continue;
@@ -66,6 +69,11 @@ object RssService {
                 "title" -> title = readTitle(parser);
                 "description" -> desc = readDescription(parser);
                 "link" -> link = readNewsLink(parser)
+                "enclosure" -> imageUrl = readImageLinkEnclosure(parser)
+                "content:encoded" -> imageUrl = readImageLinkEncoded(parser)
+                else -> if (parser.next() == XmlPullParser.TEXT) {
+                    parser.nextTag()
+                };
             }
 
         }
@@ -99,11 +107,19 @@ object RssService {
 
     // Processes image link tags in the feed.
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readImageLink(parser: XmlPullParser): String {
-        parser.require(XmlPullParser.START_TAG, null, "summary")
-        val summary = readText(parser)
-        parser.require(XmlPullParser.END_TAG, null, "summary")
-        return summary
+    private fun readImageLinkEncoded(parser: XmlPullParser): String? {
+        parser.require(XmlPullParser.START_TAG, null, "content:encoded")
+        val result = readText(parser)
+        var link: String? = null;
+
+        var doc = Jsoup.parse(result);
+        var image = doc.select("img").first();
+
+        if(image != null)
+            link = image.absUrl("src");
+
+        parser.require(XmlPullParser.END_TAG, null, "content:encoded")
+        return link
     }
 
     // Processes summary tags in the feed.
@@ -113,6 +129,21 @@ object RssService {
         val summary = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "description")
         return summary
+    }
+
+    // Processes image link tags in enclosure in the feed.
+    @Throws(IOException::class, XmlPullParserException::class)
+    private fun readImageLinkEnclosure(parser: XmlPullParser): String? {
+        parser.require(XmlPullParser.START_TAG, null, "enclosure")
+
+        var result: String? = null
+            if(parser.getAttributeValue(null, "type").contains("image/"))
+                result = parser.getAttributeValue(null, "url")
+            parser.nextTag()
+
+
+        parser.require(XmlPullParser.END_TAG, null, "enclosure")
+        return result
     }
 
     // For the tags title and summary, extracts their text values.
