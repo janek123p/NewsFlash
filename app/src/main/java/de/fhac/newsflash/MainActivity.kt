@@ -20,6 +20,9 @@ import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,10 +63,12 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initNewsData() {
-        newsList = NewsController.getNews()
-        newsListAdapter = NewsListAdapter(this, newsList)
-        binding.newsList.adapter = newsListAdapter
-        newsListAdapter.notifyDataSetChanged()
+        runBlocking {
+            newsList = NewsController.getNews()
+            newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
+            binding.newsList.adapter = newsListAdapter
+            newsListAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun initBottomSheetBehavior() {

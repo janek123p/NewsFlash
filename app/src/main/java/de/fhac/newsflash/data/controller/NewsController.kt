@@ -20,7 +20,7 @@ object NewsController {
      */
     init {
 
-        for (i in 0..10) {
+        /*for (i in 0..10) {
             cached += News(
                 i,
                 "Nachricht $i",
@@ -44,7 +44,7 @@ object NewsController {
             "Der Fußball-Bundesligist Borussia Dortmund hat sich überraschend von seinem Cheftrainer Marco Rose getrennt. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit. Dies sei das Ergebnis einer intensiven Saisonanalyse, teilte der BVB mit.",
             "https://www.tagesschau.de/regional/nordrheinwestfalen/bvb-trennt-sich-von-trainer-rose-105.html",
             "https://www.tagesschau.de/regional/nordrheinwestfalen/wdr-image-97465~_v-mittel16x9.jpg"
-        );
+        );*/
     }
 
     fun setFilter(filter: Filter) {
