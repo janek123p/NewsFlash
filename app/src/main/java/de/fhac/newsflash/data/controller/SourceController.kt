@@ -2,6 +2,7 @@ package de.fhac.newsflash.data.controller
 
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
+import de.fhac.newsflash.data.service.RssService
 
 object SourceController {
 
@@ -23,9 +24,15 @@ object SourceController {
         return sources.put(id, source) != null;
     }
 
-    fun registerSource(source: ISource): Int {
+    suspend fun registerSource(url: String): ISource? {
         val id = sources.maxOf { entry: Map.Entry<Int, ISource> -> entry.key } + 1;
-        sources[id] = source;
-        return id;
+
+        try{
+            var name = RssService.parseMeta(url);
+            sources[id] = RSSSource(id, name!!, url);
+            return sources[id];
+        }catch(ex: Exception){
+            throw Exception(ex.message ?: "Ungültiger RSS Feed")
+        }
     }
 }

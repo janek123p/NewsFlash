@@ -79,9 +79,7 @@ object NewsController {
         for (source in SourceController.getSources()) {
             if(filter != null && filter!!.sources.contains(source)) continue;
 
-            var h = {news: List<News> -> cached = news.toMutableList()}
-
-            cached.addAll(RssService.parse(source.getUrl().toString()));
+            cached.addAll(RssService.parseNews(source.getUrl().toString()));
         }
     }
 }

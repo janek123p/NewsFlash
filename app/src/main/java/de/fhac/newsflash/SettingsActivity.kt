@@ -6,14 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.webkit.URLUtil
 import de.fhac.newsflash.data.controller.SourceController
-import de.fhac.newsflash.data.models.RSSSource
-import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.ActivitySettingsBinding
+import kotlinx.coroutines.runBlocking
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var rssFeedListAdapter: RSSFeedsAdapterAdapter
+    private lateinit var rssFeedListAdapter: RSSFeedsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +20,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        rssFeedListAdapter = RSSFeedsAdapterAdapter(this@SettingsActivity)
+        rssFeedListAdapter = RSSFeedsAdapter(this@SettingsActivity)
 
         binding.apply {
             btBack.setOnClickListener { onBackPressed() }
@@ -62,7 +61,14 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun addOnAddFeedClickedListener() {
         binding.btAddRssFeed.setOnClickListener{
-            TODO("Noch nicht implementiert")
+            runBlocking {
+                try{
+                    SourceController.registerSource(binding.txtRssLink.text.toString());
+                    rssFeedListAdapter.updateFeeds();
+                }catch(ex: Exception){
+                    setRSSLinkError(ex.message ?: "Unbekannter Fehler");
+                }
+            }
         }
     }
 }

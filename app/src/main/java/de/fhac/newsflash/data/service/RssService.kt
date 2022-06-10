@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Xml
 import androidx.lifecycle.ViewModel
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.data.models.RSSSource
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -18,22 +19,62 @@ import java.util.concurrent.Flow
 
 object RssService {
 
-
-    suspend fun parse(url: String): List<News> {
+    suspend fun parseMeta(url: String): String? {
         val one = GlobalScope.async {
-            hallo(url)
+            read(url, RssService::readMeta)
         }
 
         return one.await();
     }
 
-    fun hallo(url: String): List<News> {
+    suspend fun parseNews(url: String): List<News> {
+        val one = GlobalScope.async {
+            read(url, RssService::readFeed)
+        }
+
+        return one.await();
+    }
+
+    private fun <T> read(url: String, reader: (parser: XmlPullParser) -> T): T {
         val parser = Xml.newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         parser.setInput(URL(url).openConnection().getInputStream(), "UTF-8");
         parser.nextTag();
 
-        return readFeed(parser);
+        return reader(parser);
+    }
+
+    private fun readMeta(parser: XmlPullParser): String? {
+
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            if (parser.eventType != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            if (parser.name.equals("channel", true)) {
+                parser.require(XmlPullParser.START_TAG, null, "channel")
+                var title: String? = null;
+                var link: String? = null;
+
+
+                while (parser.next() != XmlPullParser.END_TAG) {
+                    if (parser.eventType != XmlPullParser.START_TAG)
+                        continue;
+
+                    when (parser.name) {
+                        "title" -> title = readTitle(parser);
+                        "link" -> link = readNewsLink(parser)
+                        else -> if (parser.next() == XmlPullParser.TEXT) {
+                            parser.nextTag()
+                        };
+                    }
+
+                }
+
+                return title
+            }
+        }
+        return null;
     }
 
     private fun readFeed(parser: XmlPullParser): List<News> {

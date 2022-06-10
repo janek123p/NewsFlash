@@ -9,7 +9,7 @@ import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.RSSSource
 
-class RSSFeedsAdapterAdapter(private val context: Context) : BaseAdapter() {
+class RSSFeedsAdapter(private val context: Context) : BaseAdapter() {
 
     private lateinit var feeds: List<RSSSource>
 
@@ -17,7 +17,7 @@ class RSSFeedsAdapterAdapter(private val context: Context) : BaseAdapter() {
         updateFeeds()
     }
 
-    private fun updateFeeds() {
+    fun updateFeeds() {
         feeds = SourceController.getSources().filterIsInstance<RSSSource>().toMutableList()
         notifyDataSetChanged()
     }
