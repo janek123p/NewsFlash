@@ -1,7 +1,10 @@
 package de.fhac.newsflash
 
 import android.content.Intent
+import android.graphics.RenderEffect
+import android.graphics.Shader
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -69,7 +72,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addCallbacks() {
-        bottomSheetBehavior.addBottomSheetCallback(NewsBottomSheetCallback(bottomSheetBinding))
+        bottomSheetBehavior.addBottomSheetCallback(
+            NewsBottomSheetCallback(
+                bottomSheetBinding,
+                this
+            )
+        )
 
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -84,6 +92,21 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding.btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
 
         bottomSheetBinding.btSave.setOnClickListener { saveCurrentNewsToFavourite() }
+    }
+
+    fun setBackgroundBlurred(value: Float) {
+        var valueInRange = if (value < 0f) 0f else value
+        valueInRange = if (value > 1f) 1f else valueInRange
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            binding.mainConstraintLayout.setRenderEffect(
+                RenderEffect.createBlurEffect(
+                    valueInRange * 10f,
+                    valueInRange * 10f,
+                    Shader.TileMode.MIRROR
+                )
+            )
+        }
     }
 
     fun showDetailedNews(news: News) {

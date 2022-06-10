@@ -7,7 +7,7 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.databinding.BottomSheetBinding
 
-class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
+class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private val mainActivity : MainActivity) :
     BottomSheetBehavior.BottomSheetCallback() {
 
     val Number.dp
@@ -28,6 +28,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
             BottomSheetBehavior.STATE_COLLAPSED -> {
                 setWebContentInvisible()
                 binding.btResizeNews.setBackgroundResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
+                mainActivity.setBackgroundBlurred(1f)
             }
             BottomSheetBehavior.STATE_DRAGGING -> binding.apply {
                 txtHeading.visibility = View.VISIBLE
@@ -59,6 +60,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding) :
             }
         } else {
             setWebContentInvisible()
+            mainActivity.setBackgroundBlurred(1f+slideOffset)
         }
     }
 
