@@ -7,31 +7,31 @@ import android.os.Looper
 import android.util.Xml
 import androidx.lifecycle.ViewModel
 import de.fhac.newsflash.data.models.News
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.supervisorScope
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.net.URL
+import kotlinx.coroutines.*;
 import java.security.KeyStore
 
 object RssService {
 
 
-    fun parse(url: String, callback: (List<News>) -> Unit) {
-        kotlin.run {
-            runBlocking {
-                launch {
-                    val parser = Xml.newPullParser();
-                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-                    parser.setInput(URL(url).openConnection().getInputStream(), "UTF-8");
-                    parser.nextTag();
-
-                    callback(readFeed(parser));
-                }
+    suspend fun parse(url: String) : List<News> {
+            val one = GlobalScope.async {
+                hallo(url)
             }
-        }
+
+            return one.await();
+    }
+
+    fun hallo(url: String) : List<News> {
+        val parser = Xml.newPullParser();
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+        parser.setInput(URL(url).openConnection().getInputStream(), "UTF-8");
+        parser.nextTag();
+
+        return readFeed(parser);
     }
 
     private fun readFeed(parser: XmlPullParser): List<News> {

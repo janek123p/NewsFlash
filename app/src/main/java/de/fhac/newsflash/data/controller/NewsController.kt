@@ -57,9 +57,9 @@ object NewsController {
 
     fun getFavorites() = favorites
 
-    fun getNews(): List<News> {
-//        if (cached.isEmpty())
-//            refresh();
+    suspend fun getNews(): List<News> {
+        if (cached.isEmpty())
+            refresh();
 
         return cached;
     }
@@ -73,7 +73,7 @@ object NewsController {
     fun removeFavorite(id: Int) = favorites.removeIf { news -> news.id == id };
 
 
-    fun refresh() {
+    private suspend fun refresh() {
         for (source in SourceController.getSources()) {
             if(filter != null && filter!!.sources.contains(source)) continue;
 
@@ -81,7 +81,7 @@ object NewsController {
 
             var h = {news: List<News> -> cached = news.toMutableList()}
 
-            RssService.parse(source.getUrl().toString(),  h);
+            cached.addAll(RssService.parse(source.getUrl().toString()));
         }
     }
 }
