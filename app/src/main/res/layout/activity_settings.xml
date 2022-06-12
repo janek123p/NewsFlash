@@ -56,10 +56,12 @@
         app:startIconContentDescription="@string/rss_feed_link"
         app:startIconDrawable="@drawable/rss_feed">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/txt_rss_link"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            android:popupBackground="@color/design_default_color_on_primary" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

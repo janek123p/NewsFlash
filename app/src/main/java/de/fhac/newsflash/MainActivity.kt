@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var newsList: List<News>
-    private lateinit var newsListAdapter: NewsListAdapter
+    private var newsListAdapter: NewsListAdapter? = null
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity() {
         initBottomSheet()
         addCallbacks()
         addBottomNavigationCallback()
-
-
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -70,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.settings -> {
-                        var intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                        val intent = Intent(this@MainActivity, SettingsActivity::class.java)
                         startActivity(intent)
                         return@setOnItemSelectedListener true
                     }
@@ -87,10 +85,10 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
                 binding.newsList.adapter = newsListAdapter
-                newsListAdapter.notifyDataSetChanged()
+
+                newsListAdapter!!.notifyDataSetChanged()
                 binding.loadingIndicatorTop.visibility = View.GONE
             }
-            refreshNewsData()
         }
     }
 
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch {
             newsList = NewsController.getNews(refresh = true)
             runOnUiThread {
-                newsListAdapter.notifyDataSetChanged()
+                newsListAdapter?.notifyDataSetChanged()
                 binding.loadingIndicatorTop.visibility = View.GONE
             }
         }
@@ -202,9 +200,9 @@ class MainActivity : AppCompatActivity() {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, "NewsFlash")
-            var shareMessage = "\nLies dir diesen Artikel durch:\n\n${news.url}"
+            val shareMessage = getString(R.string.read_this_article)+"\n\n${news.url}"
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
-            startActivity(Intent.createChooser(shareIntent, "Welche App soll verwendet werden?"))
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.which_app_to_share)))
         }
     }
 

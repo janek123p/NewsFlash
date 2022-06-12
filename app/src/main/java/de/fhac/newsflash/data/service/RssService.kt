@@ -182,7 +182,6 @@ object RssService {
                 result = parser.getAttributeValue(null, "url")
             parser.nextTag()
 
-
         parser.require(XmlPullParser.END_TAG, null, "enclosure")
         return result
     }

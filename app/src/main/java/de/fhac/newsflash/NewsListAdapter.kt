@@ -15,7 +15,7 @@ class NewsListAdapter(
     private val data: List<News>
 ) : BaseAdapter() {
 
-    
+
     override fun getCount(): Int {
         return data.count()
     }
@@ -39,7 +39,7 @@ class NewsListAdapter(
         })
 
         return convertView.apply {
-            if (news.imageUrl != null){
+            if (news.imageUrl != null) {
                 Glide.with(context).load(news.imageUrl).into(findViewById(R.id.thumbnail));
             }
 
