@@ -5,21 +5,29 @@ import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.view.View
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
+import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
 
 class MainActivity : AppCompatActivity() {
     private lateinit var newsListAdapter: NewsListAdapter
@@ -178,8 +186,19 @@ class MainActivity : AppCompatActivity() {
         currentNews = news
 
         bottomSheetBinding.apply {
-            txtHeading.text = news.name
-            txtShortMessage.text = news.description
+            txtHeading.text = Jsoup.clean(news.title, Safelist.none()) //Remove possible HTML tags
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //Show description with possible html tags, removes everything but text format
+                txtShortMessage.text = Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()), Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                txtShortMessage.text = Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()))
+            }
+
+            webCardView.visibility = View.GONE;
+            webContent.webChromeClient = ChromeClient(progressBar, webCardView);
+            progressBar.visibility = View.VISIBLE;
+
+
             webContent.loadUrl(news.url)
 
             if (news.imageUrl != null) {
@@ -267,5 +286,20 @@ class MainActivity : AppCompatActivity() {
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             }
         }
+    }
+}
+
+class ChromeClient(private val progressBar: ProgressBar, private val webCardView: CardView) : WebChromeClient() {
+
+    override fun onProgressChanged(view: WebView?, newProgress: Int) {
+        if(newProgress >= 85){
+            progressBar.visibility = View.GONE;
+        }
+
+        if(newProgress >= 95){
+            webCardView.visibility = View.VISIBLE;
+        }
+
+        super.onProgressChanged(view, newProgress)
     }
 }

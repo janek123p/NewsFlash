@@ -1,6 +1,8 @@
 package de.fhac.newsflash
 
 import android.content.Context
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,8 @@ import de.fhac.newsflash.data.models.News
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
 
 class NewsListAdapter(
     private val mainActivity: MainActivity
@@ -61,8 +65,13 @@ class NewsListAdapter(
                 imgThumbnail.visibility = View.GONE
             }
 
-            findViewById<TextView>(R.id.news_title).text = news.name
-            findViewById<TextView>(R.id.news_content).text = news.description
+            findViewById<TextView>(R.id.news_title).text = Jsoup.clean(news.title, Safelist.none()) //Remove possible HTML tags
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //Show description with possible html tags, removes everything but text format
+                findViewById<TextView>(R.id.news_content).text = Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()), Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                findViewById<TextView>(R.id.news_content).text = Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()))
+            }
         }
     }
 }

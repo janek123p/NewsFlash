@@ -116,7 +116,7 @@ object RssService {
         }
 
         return News(
-            name = title ?: "",
+            title = title ?: "",
             description = desc ?: "DEFAULT DESCRIPTION LOREM IMPSUM".repeat(10),
             url = link ?: "",
             pubDate = date ?: Date(),

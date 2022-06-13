@@ -1,14 +1,9 @@
 package de.fhac.newsflash.data.controller
 
-import android.content.Context
-import androidx.room.Room
 import de.fhac.newsflash.data.models.Filter
-import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.News
-import de.fhac.newsflash.data.models.Tag
-import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.data.service.RssService
-import java.io.Closeable
+import kotlinx.coroutines.runBlocking
 
 object NewsController {
 
@@ -35,7 +30,9 @@ object NewsController {
 
     suspend fun getNews(refresh: Boolean = false): List<News> {
         if (cached.isEmpty() || refresh)
-            refresh();
+            runBlocking {
+                refresh();
+            }
 
         return cached;
     }
@@ -61,7 +58,7 @@ object NewsController {
                 cached.addAll(news.filter { news ->
                     filter!!.tags.any { tag ->
                         tag.keywords.any { s ->
-                            news.name.contains(
+                            news.title.contains(
                                 s
                             ) || news.description.contains(s)
                         }
