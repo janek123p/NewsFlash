@@ -1,6 +1,12 @@
-<vector android:alpha="0.2" android:height="5dp"
-    android:viewportHeight="24" android:viewportWidth="24"
-    android:width="35dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="@color/design_default_color_primary_variant"
-        android:fillType="evenOdd" android:pathData="M4,11h16v2h-16z"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="35dp"
+    android:height="5dp"
+    android:alpha="1"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/design_default_color_primary">
+    <path
+        android:fillColor="@color/white"
+        android:fillType="evenOdd"
+        android:pathData="M4,11h16v2h-16z" />
 </vector>
