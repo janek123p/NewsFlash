@@ -1,21 +1,15 @@
 package de.fhac.newsflash.data.service
 
-import android.R
-import android.os.AsyncTask
-import android.os.Handler
-import android.os.Looper
 import android.util.Xml
-import androidx.lifecycle.ViewModel
 import de.fhac.newsflash.data.models.News
-import de.fhac.newsflash.data.models.RSSSource
+import kotlinx.coroutines.*
+import org.jsoup.Jsoup
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.net.URL
-import kotlinx.coroutines.*;
-import org.jsoup.Jsoup
-import java.security.KeyStore
-import java.util.concurrent.Flow
+import java.text.SimpleDateFormat
+import java.util.*
 
 object RssService {
 
@@ -100,6 +94,7 @@ object RssService {
         var desc: String? = null;
         var link: String? = null;
         var imageUrl: String? = null;
+        var date: Date? = null;
 
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -110,8 +105,9 @@ object RssService {
                 "title" -> title = readTitle(parser);
                 "description" -> desc = readDescription(parser);
                 "link" -> link = readNewsLink(parser)
-                "enclosure" -> imageUrl = readImageLinkEnclosure(parser)
-                "content:encoded" -> imageUrl = readImageLinkEncoded(parser)
+                "enclosure" -> imageUrl = imageUrl ?: readImageLinkEnclosure(parser)
+                "content:encoded" -> imageUrl = imageUrl ?: readImageLinkEncoded(parser)
+                "pubDate" -> date = readPubdate(parser)
                 else -> if (parser.next() == XmlPullParser.TEXT) {
                     parser.nextTag()
                 };
@@ -123,8 +119,8 @@ object RssService {
             name = title ?: "",
             description = desc ?: "DEFAULT DESCRIPTION LOREM IMPSUM".repeat(10),
             url = link ?: "",
+            pubDate = date ?: Date(),
             imageUrl = imageUrl
-                ?: "https://cdn.pixabay.com/photo/2013/07/12/12/58/tv-test-pattern-146649__340.png"
         )
     }
 
@@ -163,13 +159,27 @@ object RssService {
         return link
     }
 
-    // Processes summary tags in the feed.
+    // Processes description tags in the feed.
     @Throws(IOException::class, XmlPullParserException::class)
     private fun readDescription(parser: XmlPullParser): String {
         parser.require(XmlPullParser.START_TAG, null, "description")
         val summary = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "description")
         return summary
+    }
+
+    // Processes summary tags in the feed.
+    @Throws(IOException::class, XmlPullParserException::class)
+    private fun readPubdate(parser: XmlPullParser): Date {
+        parser.require(XmlPullParser.START_TAG, null, "pubDate")
+        val summary = readText(parser)
+
+        val format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+        val date = format.parse(summary);
+
+
+        parser.require(XmlPullParser.END_TAG, null, "pubDate")
+        return date;
     }
 
     // Processes image link tags in enclosure in the feed.

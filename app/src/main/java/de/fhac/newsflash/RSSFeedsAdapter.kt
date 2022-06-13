@@ -44,7 +44,7 @@ class RSSFeedsAdapter(private val context: Context) : BaseAdapter() {
         convertView.findViewById<TextView>(R.id.txt_link).text = feed.getUrl().toString()
 
         convertView.findViewById<Button>(R.id.bt_remove).setOnClickListener {
-            SourceController.deleteSource(feed.id)
+            SourceController.deleteSource(feed)
             updateFeeds()
         }
 

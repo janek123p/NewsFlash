@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadNewsData() {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         GlobalScope.launch {
-            newsList = NewsController.getNews(refresh = false)
+            newsList = NewsController.getNews(refresh = false).sortedByDescending { news -> news.pubDate }
             runOnUiThread {
                 newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
                 binding.newsList.adapter = newsListAdapter
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshNewsData() {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         GlobalScope.launch {
-            newsList = NewsController.getNews(refresh = true)
+            newsList = NewsController.getNews(refresh = true).sortedByDescending { news -> news.pubDate }
             runOnUiThread {
                 newsListAdapter?.notifyDataSetChanged()
                 binding.loadingIndicatorTop.visibility = View.GONE
@@ -217,12 +217,12 @@ class MainActivity : AppCompatActivity() {
     private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
             if (news in NewsController.getFavorites()) {
-                NewsController.removeFavorite(news.id)
+                NewsController.removeFavorite(news)
                 Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT)
                     .show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             } else {
-                NewsController.addFavorite(news.id)
+                NewsController.addFavorite(news)
                 Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_SHORT).show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             }

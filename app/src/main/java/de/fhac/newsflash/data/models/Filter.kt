@@ -2,8 +2,8 @@ package de.fhac.newsflash.data.models
 
 class Filter {
 
-    val sources = mutableListOf<ISource>();
-    val tags = mutableListOf<Tag>();
+    internal val sources = mutableListOf<ISource>();
+    internal val tags = mutableListOf<Tag>();
 
 
     fun add(source: ISource) : Filter{
