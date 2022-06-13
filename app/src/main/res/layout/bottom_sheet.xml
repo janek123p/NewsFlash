@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,27 +16,10 @@
         android:background="@drawable/rect_rounded_top"
         android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="180dp"
-            android:layout_marginTop="180dp"
-            android:layout_marginEnd="180dp"
-            android:layout_marginBottom="363dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_buttons"
-            app:layout_constraintVertical_bias="0.0" />
-
         <ImageView
             android:id="@+id/img_ruler"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="5dp"
             android:layout_marginTop="5dp"
             android:padding="5dp"
             android:scaleType="centerCrop"
@@ -52,7 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginVertical="5dp"
+            android:layout_marginVertical="10dp"
             android:background="@drawable/rect_rounded_full"
             android:gravity="center"
             android:orientation="horizontal"
@@ -98,7 +80,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/preview_layout"
+            android:id="@+id/preview_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -145,30 +127,55 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/web_card_view"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/web_view_group"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/rect_rounded_full"
             android:visibility="gone"
-            app:cardCornerRadius="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_buttons">
 
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/web_scroll_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="100dp"
+                android:layout_marginEnd="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <WebView
-                    android:id="@+id/web_content"
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/web_card_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@drawable/rect_rounded_full"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/web_scroll_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </androidx.core.widget.NestedScrollView>
-        </androidx.cardview.widget.CardView>
+                    android:layout_height="match_parent">
+
+                    <WebView
+                        android:id="@+id/web_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </androidx.core.widget.NestedScrollView>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

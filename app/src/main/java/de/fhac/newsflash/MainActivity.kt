@@ -201,8 +201,8 @@ class MainActivity : AppCompatActivity() {
                     Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()))
             }
 
-            webCardView.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
+            webCardView.visibility = View.GONE
 
             webContent.loadUrl(news.url)
 
@@ -297,15 +297,15 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class ChromeClient(private val progressBar: ProgressBar, private val webCardView: CardView) :
+class ChromeClient(
+    private val progressBar: ProgressBar,
+    private val webCardView: CardView
+) :
     WebChromeClient() {
 
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
-        if (newProgress >= 85) {
+        if (newProgress >= 90) {
             progressBar.visibility = View.GONE
-        }
-
-        if (newProgress >= 95) {
             webCardView.visibility = View.VISIBLE
         }
 

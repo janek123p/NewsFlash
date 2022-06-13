@@ -34,12 +34,12 @@ class NewsBottomSheetCallback(
                 mainActivity.setBackgroundBlurred(1f)
             }
             BottomSheetBehavior.STATE_DRAGGING -> binding.apply {
-                previewLayout.visibility = View.VISIBLE
-                webCardView.visibility = View.VISIBLE
+                previewGroup.visibility = View.VISIBLE
+                webViewGroup.visibility = View.VISIBLE
                 when (lastBottomSheetState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> webCardView.alpha = 0f
+                    BottomSheetBehavior.STATE_COLLAPSED -> webViewGroup.alpha = 0f
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        previewLayout.alpha = 1f
+                        previewGroup.alpha = 1f
                     }
                 }
             }
@@ -50,8 +50,8 @@ class NewsBottomSheetCallback(
     override fun onSlide(bottomSheet: View, slideOffset: Float) {
         if (slideOffset > 0) {
             binding.apply {
-                webCardView.alpha = slideOffset
-                previewLayout.alpha = 1f - slideOffset
+                webViewGroup.alpha = slideOffset
+                previewGroup.alpha = 1f - slideOffset
                 if (slideOffset > 0.5) {
                     var drawable = mainConstraintLayout.background as GradientDrawable;
                     drawable.cornerRadius = (2 * (1 - slideOffset) * 30).dp;
@@ -66,16 +66,16 @@ class NewsBottomSheetCallback(
 
     private fun setWebContentInvisible() {
         binding.apply {
-            previewLayout.visibility = View.VISIBLE
-            webCardView.visibility = View.GONE
+            previewGroup.visibility = View.VISIBLE
+            webViewGroup.visibility = View.GONE
             (mainConstraintLayout.background as GradientDrawable).cornerRadius = 30.dp
         }
     }
 
     private fun setWebContentVisible() {
         binding.apply {
-            previewLayout.visibility = View.GONE
-            webCardView.visibility = View.VISIBLE
+            previewGroup.visibility = View.GONE
+            webViewGroup.visibility = View.VISIBLE
             (mainConstraintLayout.background as GradientDrawable).cornerRadius = 0.dp
         }
     }
