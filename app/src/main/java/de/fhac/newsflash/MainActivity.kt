@@ -14,6 +14,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.data.controller.NewsController
@@ -129,7 +130,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Add various callbacks for bottom sheet, BackPressdDispatcher and various buttons
+     * Add various callbacks for bottom sheet, BackPressedDispatcher and various buttons
      */
     private fun addCallbacks() {
         bottomSheetBehavior.addBottomSheetCallback(
@@ -185,7 +186,7 @@ class MainActivity : AppCompatActivity() {
             if (news.imageUrl != null) {
                 imgThumbnail.visibility = View.VISIBLE
                 Glide.with(this@MainActivity).load(news.imageUrl).centerCrop().into(imgThumbnail)
-            }else{
+            } else {
                 imgThumbnail.visibility = View.GONE
             }
 
@@ -215,7 +216,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Switches state of the bottomSheetBehavoir from COLLAPSED to EXPANDED and vice versa
+     * Switches state of the bottomSheetBehavior from COLLAPSED to EXPANDED and vice versa
      */
     private fun switchBottomSheetBehaviorState() {
         when (bottomSheetBehavior.state) {
@@ -244,15 +245,18 @@ class MainActivity : AppCompatActivity() {
      * Opens current news in browser
      */
     private fun showCurrentNewsInBrowser() {
-        currentNews?.let { news ->
-            val showInBrowserIntent = Intent(Intent.ACTION_VIEW)
-            showInBrowserIntent.data = Uri.parse(news.url)
-            startActivity(showInBrowserIntent)
+        if (currentNews != null) {
+            CustomTabsIntent.Builder()
+                .setInstantAppsEnabled(false)
+                .setUrlBarHidingEnabled(true)
+                .setShowTitle(false)
+                .build()
+                .launchUrl(this, Uri.parse(currentNews!!.url))
         }
     }
 
     /**
-     * Depending on if the current news already belongs to favorits, the news will be saved to or removed from favorites
+     * Depending on if the current news already belongs to favorites, the news will be saved to or removed from favorites
      */
     private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
