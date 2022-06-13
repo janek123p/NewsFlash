@@ -147,7 +147,7 @@
                 <WebView
                     android:id="@+id/web_content"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="wrap_content" />
             </androidx.core.widget.NestedScrollView>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
