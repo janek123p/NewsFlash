@@ -7,7 +7,10 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.databinding.BottomSheetBinding
 
-class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private val mainActivity : MainActivity) :
+class NewsBottomSheetCallback(
+    private val binding: BottomSheetBinding,
+    private val mainActivity: MainActivity
+) :
     BottomSheetBehavior.BottomSheetCallback() {
 
     val Number.dp
@@ -31,14 +34,12 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
                 mainActivity.setBackgroundBlurred(1f)
             }
             BottomSheetBehavior.STATE_DRAGGING -> binding.apply {
-                txtHeading.visibility = View.VISIBLE
-                txtShortMessage.visibility = View.VISIBLE
+                previewLayout.visibility = View.VISIBLE
                 webCardView.visibility = View.VISIBLE
-                imgThumbnail.visibility = View.VISIBLE
                 when (lastBottomSheetState) {
                     BottomSheetBehavior.STATE_COLLAPSED -> webCardView.alpha = 0f
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        txtHeading.alpha = 0f; txtShortMessage.alpha = 0f; imgThumbnail.alpha = 0f
+                        previewLayout.alpha = 1f
                     }
                 }
             }
@@ -50,9 +51,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
         if (slideOffset > 0) {
             binding.apply {
                 webCardView.alpha = slideOffset
-                txtHeading.alpha = 1f - slideOffset
-                txtShortMessage.alpha = 1f - slideOffset
-                imgThumbnail.alpha = 1f - slideOffset
+                previewLayout.alpha = 1f - slideOffset
                 if (slideOffset > 0.5) {
                     var drawable = mainConstraintLayout.background as GradientDrawable;
                     drawable.cornerRadius = (2 * (1 - slideOffset) * 30).dp;
@@ -60,16 +59,14 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
             }
         } else {
             setWebContentInvisible()
-            mainActivity.setBackgroundBlurred(1f+slideOffset)
+            mainActivity.setBackgroundBlurred(1f + slideOffset)
         }
     }
 
 
     private fun setWebContentInvisible() {
         binding.apply {
-            txtHeading.visibility = View.VISIBLE
-            txtShortMessage.visibility = View.VISIBLE
-            imgThumbnail.visibility = View.VISIBLE
+            previewLayout.visibility = View.VISIBLE
             webCardView.visibility = View.GONE
             (mainConstraintLayout.background as GradientDrawable).cornerRadius = 30.dp
         }
@@ -77,9 +74,7 @@ class NewsBottomSheetCallback(private val binding: BottomSheetBinding, private v
 
     private fun setWebContentVisible() {
         binding.apply {
-            txtHeading.visibility = View.GONE
-            txtShortMessage.visibility = View.GONE
-            imgThumbnail.visibility = View.GONE
+            previewLayout.visibility = View.GONE
             webCardView.visibility = View.VISIBLE
             (mainConstraintLayout.background as GradientDrawable).cornerRadius = 0.dp
         }

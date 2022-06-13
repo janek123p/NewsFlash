@@ -4,24 +4,22 @@
     android:id="@+id/bottom_sheet_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     app:behavior_hideable="true"
     app:behavior_peekHeight="230dp"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    android:clickable="true"
-    >
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@drawable/rect_rounded_top">
+        android:background="@drawable/rect_rounded_top"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/img_ruler"
             android:layout_width="0dp"
             android:layout_height="10dp"
-            android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:padding="5dp"
             android:scaleType="centerCrop"
@@ -29,65 +27,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/txt_heading"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_buttons" />
-
-
-        <ImageView
-            android:id="@+id/img_thumbnail"
-            android:layout_width="140dp"
-            android:layout_height="90dp"
-            android:layout_margin="10dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_heading" />
-
-        <TextView
-            android:id="@+id/txt_short_message"
-            android:layout_width="0dp"
-            android:layout_height="90dp"
-            android:layout_margin="10dp"
-            android:ellipsize="end"
-            android:gravity="left|center_vertical"
-            android:maxLines="5"
-            android:textSize="13sp"
-            app:layout_constraintLeft_toRightOf="@id/img_thumbnail"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_heading" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/web_card_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:visibility="gone"
-            android:background="@drawable/rect_rounded_full"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_buttons"
-            app:cardCornerRadius="15dp"
-            >
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/web_scroll_view"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent">
-                <WebView
-                    android:id="@+id/web_content"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </androidx.core.widget.NestedScrollView>
-        </androidx.cardview.widget.CardView>
 
 
         <LinearLayout
@@ -140,6 +79,76 @@
                 android:contentDescription="show article in browser" />
         </LinearLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/preview_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_buttons">
 
+            <TextView
+                android:id="@+id/txt_heading"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textSize="16sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/img_thumbnail"
+                android:layout_width="140dp"
+                android:layout_height="90dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_heading" />
+
+            <TextView
+                android:id="@+id/txt_short_message"
+                android:layout_width="0dp"
+                android:layout_height="90dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:gravity="left|center_vertical"
+                android:maxLines="5"
+                android:textSize="13sp"
+                app:layout_constraintLeft_toRightOf="@id/img_thumbnail"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_heading" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/web_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/rect_rounded_full"
+            android:visibility="gone"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_buttons">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/web_scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <WebView
+                    android:id="@+id/web_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.core.widget.NestedScrollView>
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

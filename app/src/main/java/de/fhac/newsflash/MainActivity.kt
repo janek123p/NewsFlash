@@ -20,29 +20,32 @@ import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var newsList: List<News>
-    private var newsListAdapter: NewsListAdapter? = null
+    private lateinit var newsListAdapter: NewsListAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
 
+    /**
+     * Initialize UI and logic of MainActivity
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
-        loadNewsData()
+        initNewsData()
         initBottomSheet()
         addCallbacks()
         addBottomNavigationCallback()
     }
 
+    /**
+     * Restore lastly loaded news e.g. when device is rotated
+     */
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState.containsKey("activatedNews")) {
@@ -51,6 +54,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Save currently loaded news to be able to restore it in case the device is rotated or similar
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         currentNews?.apply {
             outState.putParcelable("activatedNews", this)
@@ -58,11 +64,17 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
+    /**
+     * Reload data if app is restarted
+     */
     override fun onRestart() {
-        refreshNewsData()
+        reloadNewsData()
         super.onRestart()
     }
 
+    /**
+     * Add Callbacks for bottom navigation bar
+     */
     private fun addBottomNavigationCallback() {
         binding.bottomNavigation.apply {
             setOnItemSelectedListener {
@@ -78,31 +90,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadNewsData() {
-        binding.loadingIndicatorTop.visibility = View.VISIBLE
-        GlobalScope.launch {
-            newsList = NewsController.getNews(refresh = false).sortedByDescending { news -> news.pubDate }
-            runOnUiThread {
-                newsListAdapter = NewsListAdapter(this@MainActivity, newsList)
-                binding.newsList.adapter = newsListAdapter
+    /**
+     * Initialize ListView and Adapter and load news into it
+     */
+    private fun initNewsData() {
+        newsListAdapter = NewsListAdapter(this)
+        binding.newsList.adapter = newsListAdapter
 
-                newsListAdapter!!.notifyDataSetChanged()
-                binding.loadingIndicatorTop.visibility = View.GONE
-            }
-        }
+        reloadNewsData(refresh = false)
     }
 
-    private fun refreshNewsData() {
+    /**
+     * Reload News
+     */
+    private fun reloadNewsData(refresh: Boolean = true) {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
-        GlobalScope.launch {
-            newsList = NewsController.getNews(refresh = true).sortedByDescending { news -> news.pubDate }
+        newsListAdapter.launchReloadData(refresh = refresh, onFinished = {
             runOnUiThread {
-                newsListAdapter?.notifyDataSetChanged()
                 binding.loadingIndicatorTop.visibility = View.GONE
             }
-        }
+        })
     }
 
+    /**
+     * Initialize Bottom Sheet
+     */
     @SuppressLint("SetJavaScriptEnabled")
     private fun initBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetBinding.bottomSheetRootLayout)
@@ -116,6 +128,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Add various callbacks for bottom sheet, BackPressdDispatcher and various buttons
+     */
     private fun addCallbacks() {
         bottomSheetBehavior.addBottomSheetCallback(
             NewsBottomSheetCallback(
@@ -130,15 +145,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        bottomSheetBinding.btResizeNews.setOnClickListener { resizeNews() }
-
-        bottomSheetBinding.btShare.setOnClickListener { shareCurrentNews() }
-
-        bottomSheetBinding.btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
-
-        bottomSheetBinding.btSave.setOnClickListener { saveOrRemoveCurrentNewsToFavorites() }
+        bottomSheetBinding.apply {
+            btResizeNews.setOnClickListener { switchBottomSheetBehaviorState() }
+            btShare.setOnClickListener { shareCurrentNews() }
+            btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
+            btSave.setOnClickListener { saveOrRemoveCurrentNewsToFavorites() }
+        }
     }
 
+    /**
+     * Sets background (news list, filters etc.) blurred
+     */
     fun setBackgroundBlurred(value: Float) {
         var valueInRange = if (value < 0f) 0f else value
         valueInRange = if (value > 1f) 1f else valueInRange
@@ -154,6 +171,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Shows news in detail view inside bottom sheet
+     */
     fun showDetailedNews(news: News) {
         currentNews = news
 
@@ -161,9 +181,14 @@ class MainActivity : AppCompatActivity() {
             txtHeading.text = news.name
             txtShortMessage.text = news.description
             webContent.loadUrl(news.url)
+
             if (news.imageUrl != null) {
+                imgThumbnail.visibility = View.VISIBLE
                 Glide.with(this@MainActivity).load(news.imageUrl).centerCrop().into(imgThumbnail)
+            }else{
+                imgThumbnail.visibility = View.GONE
             }
+
             if (news in NewsController.getFavorites()) {
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             } else {
@@ -176,6 +201,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Method gets called, when back-key is pressed on device
+     */
     private fun handleOnBackPressed() {
         when (bottomSheetBehavior.state) {
             BottomSheetBehavior.STATE_COLLAPSED -> bottomSheetBehavior.state =
@@ -186,7 +214,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun resizeNews() {
+    /**
+     * Switches state of the bottomSheetBehavoir from COLLAPSED to EXPANDED and vice versa
+     */
+    private fun switchBottomSheetBehaviorState() {
         when (bottomSheetBehavior.state) {
             BottomSheetBehavior.STATE_COLLAPSED -> bottomSheetBehavior.state =
                 BottomSheetBehavior.STATE_EXPANDED
@@ -195,17 +226,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Opens menu for user to share news with various applications
+     */
     private fun shareCurrentNews() {
         currentNews?.let { news ->
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, "NewsFlash")
-            val shareMessage = getString(R.string.read_this_article)+"\n\n${news.url}"
+            val shareMessage = getString(R.string.read_this_article) + "\n\n${news.url}"
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
             startActivity(Intent.createChooser(shareIntent, getString(R.string.which_app_to_share)))
         }
     }
 
+    /**
+     * Opens current news in browser
+     */
     private fun showCurrentNewsInBrowser() {
         currentNews?.let { news ->
             val showInBrowserIntent = Intent(Intent.ACTION_VIEW)
@@ -214,6 +251,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Depending on if the current news already belongs to favorits, the news will be saved to or removed from favorites
+     */
     private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
             if (news in NewsController.getFavorites()) {
