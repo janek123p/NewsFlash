@@ -12,10 +12,19 @@ object SourceController {
         RSSSource("ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
     )
 
+    /**
+     * Get all configured sources
+     */
     fun getSources() = sources;
 
+    /**
+     * Delete a source
+     */
     fun deleteSource(source: ISource) = sources.remove(source) != null;
 
+    /**
+     * Register a new source by its url. Checks if its a valid rss feed and parses the feeds title.
+     */
     suspend fun registerSource(url: String): ISource? {
         try{
             val name = RssService.parseMeta(url);

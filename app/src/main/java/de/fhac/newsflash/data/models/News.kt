@@ -6,7 +6,7 @@ import java.util.*
 
 @Parcelize
 class News(
-    val name: String,
+    val title: String,
     val description: String,
     val url: String,
     val pubDate: Date,

@@ -1,14 +1,9 @@
 package de.fhac.newsflash.data.controller
 
-import android.content.Context
-import androidx.room.Room
 import de.fhac.newsflash.data.models.Filter
-import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.News
-import de.fhac.newsflash.data.models.Tag
-import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.data.service.RssService
-import java.io.Closeable
+import kotlinx.coroutines.runBlocking
 
 object NewsController {
 
@@ -23,32 +18,57 @@ object NewsController {
 
     }
 
+    /**
+     * Set the filter for sources and tags
+     */
     fun setFilter(filter: Filter) {
         this.filter = filter;
     }
 
+    /**
+     * Remove the current filter
+     */
     fun resetFilter() {
         filter = null;
     }
 
+    /**
+     * Get news marked as favorite
+     */
     fun getFavorites() = favorites
 
+    /**
+     * Get all cached news, refresh if necessary
+     *
+     * @param refresh If true refreshed the newsfeed
+     * @return All loaded news
+     */
     suspend fun getNews(refresh: Boolean = false): List<News> {
         if (cached.isEmpty() || refresh)
-            refresh();
+            runBlocking {
+                refresh();
+            }
 
         return cached;
     }
 
+    /**
+     * Adds a news to the users favorites
+     */
     fun addFavorite(news: News): Boolean {
         if (!cached.contains(news)) return false;
 
         return favorites.add(news)
     }
 
+    /**
+     * Removes a news from the users favorites
+     */
     fun removeFavorite(news: News) = favorites.remove(news);
 
-
+    /**
+     * Refreshes the newsfeed. Takes the specified filter into account.
+     */
     private suspend fun refresh() {
         cached.clear();
 
@@ -61,7 +81,7 @@ object NewsController {
                 cached.addAll(news.filter { news ->
                     filter!!.tags.any { tag ->
                         tag.keywords.any { s ->
-                            news.name.contains(
+                            news.title.contains(
                                 s
                             ) || news.description.contains(s)
                         }
