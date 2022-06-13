@@ -18,16 +18,31 @@ object NewsController {
 
     }
 
+    /**
+     * Set the filter for sources and tags
+     */
     fun setFilter(filter: Filter) {
         this.filter = filter;
     }
 
+    /**
+     * Remove the current filter
+     */
     fun resetFilter() {
         filter = null;
     }
 
+    /**
+     * Get news marked as favorite
+     */
     fun getFavorites() = favorites
 
+    /**
+     * Get all cached news, refresh if necessary
+     *
+     * @param refresh If true refreshed the newsfeed
+     * @return All loaded news
+     */
     suspend fun getNews(refresh: Boolean = false): List<News> {
         if (cached.isEmpty() || refresh)
             runBlocking {
@@ -37,15 +52,23 @@ object NewsController {
         return cached;
     }
 
+    /**
+     * Adds a news to the users favorites
+     */
     fun addFavorite(news: News): Boolean {
         if (!cached.contains(news)) return false;
 
         return favorites.add(news)
     }
 
+    /**
+     * Removes a news from the users favorites
+     */
     fun removeFavorite(news: News) = favorites.remove(news);
 
-
+    /**
+     * Refreshes the newsfeed. Takes the specified filter into account.
+     */
     private suspend fun refresh() {
         cached.clear();
 

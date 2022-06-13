@@ -13,6 +13,9 @@ import java.util.*
 
 object RssService {
 
+    /**
+     * Parse the meta information of a rss feed. Currently only the feeds title.
+     */
     suspend fun parseMeta(url: String): String? {
         val one = GlobalScope.async {
             read(url, RssService::readMeta)
@@ -21,6 +24,9 @@ object RssService {
         return one.await();
     }
 
+    /**
+     * Parse all news items in the specified rss feed
+     */
     suspend fun parseNews(url: String): List<News> {
         val one = GlobalScope.async {
             read(url, RssService::readFeed)
@@ -29,6 +35,9 @@ object RssService {
         return one.await();
     }
 
+    /**
+     * Connect to the url and read the xml feed
+     */
     private fun <T> read(url: String, reader: (parser: XmlPullParser) -> T): T {
         val parser = Xml.newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -38,6 +47,9 @@ object RssService {
         return reader(parser);
     }
 
+    /**
+     * Parse the meta information.
+     */
     private fun readMeta(parser: XmlPullParser): String? {
 
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
@@ -71,23 +83,30 @@ object RssService {
         return null;
     }
 
+    /**
+     * Parse the news feed
+     */
     private fun readFeed(parser: XmlPullParser): List<News> {
         val news = mutableListOf<News>();
 
 //        parser.require(XmlPullParser.START_TAG, null, "feed")
-        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+        while (parser.next() != XmlPullParser.END_DOCUMENT) { //Until end of document
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue;
             }
 
+            //Check if current tag is an item (news) tag
             if (parser.name.equals("item", true)) {
-                news.add(readEntry(parser))
+                news.add(readEntry(parser)) //Read entry
             }
         }
 
         return news;
     }
 
+    /**
+     * Read a single entry.
+     */
     private fun readEntry(parser: XmlPullParser): News {
         parser.require(XmlPullParser.START_TAG, null, "item")
         var title: String? = null;
@@ -97,16 +116,16 @@ object RssService {
         var date: Date? = null;
 
 
-        while (parser.next() != XmlPullParser.END_TAG) {
+        while (parser.next() != XmlPullParser.END_TAG) { //Read until entry ended
             if (parser.eventType != XmlPullParser.START_TAG)
                 continue;
 
-            when (parser.name) {
+            when (parser.name) { //Parse known feed properties
                 "title" -> title = readTitle(parser);
                 "description" -> desc = readDescription(parser);
                 "link" -> link = readNewsLink(parser)
-                "enclosure" -> imageUrl = imageUrl ?: readImageLinkEnclosure(parser)
-                "content:encoded" -> imageUrl = imageUrl ?: readImageLinkEncoded(parser)
+                "enclosure" -> imageUrl = imageUrl ?: readImageLinkEnclosure(parser) //Image type one
+                "content:encoded" -> imageUrl = imageUrl ?: readImageLinkEncoded(parser)//Image type two
                 "pubDate" -> date = readPubdate(parser)
                 else -> if (parser.next() == XmlPullParser.TEXT) {
                     parser.nextTag()
@@ -116,8 +135,8 @@ object RssService {
         }
 
         return News(
-            title = title ?: "",
-            description = desc ?: "DEFAULT DESCRIPTION LOREM IMPSUM".repeat(10),
+            title = title ?: "No title",
+            description = desc ?: "",
             url = link ?: "",
             pubDate = date ?: Date(),
             imageUrl = imageUrl
