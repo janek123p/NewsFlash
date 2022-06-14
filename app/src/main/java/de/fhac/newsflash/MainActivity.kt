@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                 domStorageEnabled = true
                 loadsImagesAutomatically = true
                 javaScriptEnabled = true
-                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
             }
         }
     }
