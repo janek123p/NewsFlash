@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "source")
 data class DatabaseSource(
-    @PrimaryKey(autoGenerate = true) val uid: Long,
+    @PrimaryKey(autoGenerate = true) val uid: Long? = null,
     val name: String,
     val url: String
 ) {

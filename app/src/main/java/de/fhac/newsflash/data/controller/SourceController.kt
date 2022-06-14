@@ -23,18 +23,18 @@ object SourceController {
 
     init {
         var feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
-            ?.map { source -> RSSSource(source.uid, source.name, source.url) }?.toMutableList<ISource>()
+            ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }?.toMutableList<ISource>()
 
         if(feeds == null || feeds.isEmpty()){
             AppDatabase.getDatabase()?.sourceRepository()?.insertAll(
-                DatabaseSource(0,"Tagesschau", "https://www.tagesschau.de/xml/rss2/"),
-                DatabaseSource(1, "Deutsche Welle", "https://rss.dw.com/xml/rss-de-all"),
-                DatabaseSource(2, "ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
+                DatabaseSource(name =  "Tagesschau", url = "https://www.tagesschau.de/xml/rss2/"),
+                DatabaseSource(name=  "Deutsche Welle", url = "https://rss.dw.com/xml/rss-de-all"),
+                DatabaseSource(name = "ZDF", url= "https://www.zdf.de/rss/zdf/nachrichten")
             )
         }
 
         feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
-            ?.map { source -> RSSSource(source.uid, source.name, source.url) }?.toMutableList<ISource>()
+            ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }?.toMutableList<ISource>()
 
         if (feeds != null && feeds.isNotEmpty())
             sources = feeds;
