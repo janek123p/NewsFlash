@@ -6,15 +6,29 @@
     android:layout_height="match_parent"
     android:clickable="true"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="230dp"
+    app:behavior_peekHeight="240dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+
+    <ImageView
+        android:id="@+id/img_view_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/shadowViewHeight"
+        android:src="@drawable/gradient_shadow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/shadowMargin"
         android:background="@drawable/rect_rounded_top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/img_ruler"
@@ -178,7 +192,7 @@
                 </androidx.core.widget.NestedScrollView>
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+        x
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>

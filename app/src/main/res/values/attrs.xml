@@ -2,4 +2,5 @@
 <resources>
     <attr name="gradientStartColor" format="color" />
     <attr name="gradientEndColor" format="color" />
+    <attr name="shadowColor" format="color"/>
 </resources>

@@ -2,8 +2,13 @@ package de.fhac.newsflash
 
 import android.content.res.Resources
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.TypedValue
 import android.view.View
+import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayoutStates
+import androidx.core.view.marginTop
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.databinding.BottomSheetBinding
 
@@ -13,12 +18,6 @@ class NewsBottomSheetCallback(
 ) :
     BottomSheetBehavior.BottomSheetCallback() {
 
-    val Number.dp
-        get() = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            this.toFloat(),
-            Resources.getSystem().displayMetrics
-        )
 
     private var lastBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -51,13 +50,21 @@ class NewsBottomSheetCallback(
     }
 
     override fun onSlide(bottomSheet: View, slideOffset: Float) {
+        println("ONSLIDE")
         if (slideOffset > 0) {
             binding.apply {
                 webViewGroup.alpha = slideOffset
                 previewGroup.alpha = 1f - slideOffset
                 if (slideOffset > 0.5) {
-                    var drawable = mainConstraintLayout.background as GradientDrawable;
-                    drawable.cornerRadius = (2 * (1 - slideOffset) * 30).dp;
+                    var drawable = mainConstraintLayout.background as GradientDrawable
+                    drawable.cornerRadius =
+                        (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.cornerRadiusBig))
+                    binding.imgViewShadow.layoutParams.height =
+                        (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.shadowViewHeight)).toInt()
+                    setMarginTop(
+                        binding.mainConstraintLayout,
+                        (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.shadowMargin)).toInt()
+                    )
                 }
             }
         } else {
@@ -66,12 +73,17 @@ class NewsBottomSheetCallback(
         }
     }
 
+    private fun setMarginTop(layout: ConstraintLayout, margin: Int) {
+        var layoutParams = layout.layoutParams as FrameLayout.LayoutParams
+        layoutParams.topMargin = margin
+        layout.layoutParams = layoutParams
+    }
+
 
     private fun setWebContentInvisible() {
         binding.apply {
             previewGroup.visibility = View.VISIBLE
             webViewGroup.visibility = View.GONE
-            (mainConstraintLayout.background as GradientDrawable).cornerRadius = 30.dp
         }
     }
 
@@ -79,7 +91,6 @@ class NewsBottomSheetCallback(
         binding.apply {
             previewGroup.visibility = View.GONE
             webViewGroup.visibility = View.VISIBLE
-            (mainConstraintLayout.background as GradientDrawable).cornerRadius = 0.dp
         }
     }
 }

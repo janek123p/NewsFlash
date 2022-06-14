@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:startColor="?attr/gradientStartColor"
+        android:angle="270"
         android:endColor="?attr/gradientEndColor"
-        android:angle="270"/>
+        android:startColor="?attr/gradientStartColor" />
 
     <corners
-        android:topLeftRadius="20dp"
-        android:topRightRadius="30dp" />
+        android:topLeftRadius="@dimen/cornerRadiusBig"
+        android:topRightRadius="@dimen/cornerRadiusBig" />
 </shape>

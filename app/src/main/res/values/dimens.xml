@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="shadowViewHeight">40dp</dimen>
+    <dimen name="shadowMargin">10dp</dimen>
+    <dimen name="cornerRadiusSmall">20dp</dimen>
+    <dimen name="cornerRadiusBig">30dp</dimen>
+</resources>
