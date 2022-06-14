@@ -21,22 +21,24 @@ class NewsListAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {
 
-    private var sub: StreamSubscription<List<News>> = NewsController.getNewsStream().listen(this::notify, true);
+    private var sub: StreamSubscription<List<News>> =
+        NewsController.getNewsStream().listen(this::notify, true)
 
-    private var data: List<News>? = null
+    private var data: List<News>? = NewsController.getNewsStream().getLatest()
 
-    fun launchReloadData(refresh: Boolean, onFinished: Runnable? = null) {
+
+    fun launchReloadData(onFinished: Runnable? = null) {
         GlobalScope.launch {
             NewsController.refresh()
             onFinished?.run()
         }
     }
 
-    private fun notify(newsList: List<News>?){
+    private fun notify(newsList: List<News>?) {
         GlobalScope.launch {
             data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf();
 
-            mainActivity.runOnUiThread{
+            mainActivity.runOnUiThread {
                 notifyDataSetChanged()
             }
         }
@@ -75,12 +77,17 @@ class NewsListAdapter(
                 imgThumbnail.visibility = View.GONE
             }
 
-            findViewById<TextView>(R.id.news_title).text = Jsoup.clean(news.title, Safelist.none()) //Remove possible HTML tags
+            findViewById<TextView>(R.id.news_title).text =
+                Jsoup.clean(news.title, Safelist.none()) //Remove possible HTML tags
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //Show description with possible html tags, removes everything but text format
-                findViewById<TextView>(R.id.news_content).text = Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()), Html.FROM_HTML_MODE_COMPACT)
+                findViewById<TextView>(R.id.news_content).text = Html.fromHtml(
+                    Jsoup.clean(news.description, Safelist.basic()),
+                    Html.FROM_HTML_MODE_COMPACT
+                )
             } else {
-                findViewById<TextView>(R.id.news_content).text = Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()))
+                findViewById<TextView>(R.id.news_content).text =
+                    Html.fromHtml(Jsoup.clean(news.description, Safelist.basic()))
             }
         }
     }

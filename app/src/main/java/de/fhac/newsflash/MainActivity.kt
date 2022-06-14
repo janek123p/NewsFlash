@@ -104,16 +104,15 @@ class MainActivity : AppCompatActivity() {
     private fun initNewsData() {
         newsListAdapter = NewsListAdapter(this)
         binding.newsList.adapter = newsListAdapter
-
-        reloadNewsData(refresh = false)
+        reloadNewsData()
     }
 
     /**
      * Reload News
      */
-    private fun reloadNewsData(refresh: Boolean = true) {
+    private fun reloadNewsData() {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
-        newsListAdapter.launchReloadData(refresh = refresh, onFinished = {
+        newsListAdapter.launchReloadData(onFinished = {
             runOnUiThread {
                 binding.loadingIndicatorTop.visibility = View.GONE
             }
@@ -294,6 +293,13 @@ class MainActivity : AppCompatActivity() {
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             }
         }
+    }
+
+    /**
+     * Resets the current news to be null
+     */
+    fun resetCurrentNews() {
+        currentNews = null
     }
 }
 

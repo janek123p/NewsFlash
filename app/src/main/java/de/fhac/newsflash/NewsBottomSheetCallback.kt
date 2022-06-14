@@ -43,6 +43,9 @@ class NewsBottomSheetCallback(
                     }
                 }
             }
+            BottomSheetBehavior.STATE_HIDDEN -> {
+                mainActivity.resetCurrentNews()
+            }
         }
         lastBottomSheetState = newState
     }
