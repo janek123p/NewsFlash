@@ -7,7 +7,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
-data class RSSSource(private val name: String, private val url: String) :
+data class RSSSource(override val id: Long, private val name: String, private val url: String) :
     ISource {
 
     override fun getName(): String {
