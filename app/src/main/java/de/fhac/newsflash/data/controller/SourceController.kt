@@ -1,19 +1,46 @@
 package de.fhac.newsflash.data.controller
 
+import android.provider.ContactsContract
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
+import de.fhac.newsflash.data.repositories.AppDatabase
+import de.fhac.newsflash.data.repositories.models.DatabaseSource
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 object SourceController {
 
-    private val sources = mutableListOf<ISource>(
-        RSSSource("Tagesschau", "https://www.tagesschau.de/xml/rss2/"),
-        RSSSource("Deutsche Welle", "https://rss.dw.com/xml/rss-de-all"),
-        RSSSource("ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
+    private var sources = mutableListOf<ISource>(
+//        RSSSource("Tagesschau", "https://www.tagesschau.de/xml/rss2/"),
+//        RSSSource("Deutsche Welle", "https://rss.dw.com/xml/rss-de-all"),
+//        RSSSource("ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
     )
 
     private val sourceController = StreamController<MutableList<ISource>>();
+
+    init {
+        var feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
+            ?.map { source -> RSSSource(source.uid, source.name, source.url) }?.toMutableList<ISource>()
+
+        if(feeds == null || feeds.isEmpty()){
+            AppDatabase.getDatabase()?.sourceRepository()?.insertAll(
+                DatabaseSource(0,"Tagesschau", "https://www.tagesschau.de/xml/rss2/"),
+                DatabaseSource(1, "Deutsche Welle", "https://rss.dw.com/xml/rss-de-all"),
+                DatabaseSource(2, "ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
+            )
+        }
+
+        feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
+            ?.map { source -> RSSSource(source.uid, source.name, source.url) }?.toMutableList<ISource>()
+
+        if (feeds != null && feeds.isNotEmpty())
+            sources = feeds;
+
+        sourceController.getSink().add(sources);
+    }
 
     /**
      * Get all configured sources
@@ -23,26 +50,40 @@ object SourceController {
     /**
      * Delete a source
      */
-    fun deleteSource(source: ISource) : Boolean{
-        if(sources.remove(source) != null){
+    fun deleteSource(source: ISource, onError: ((java.lang.Exception) -> Unit)? = null) {
+        if (sources.remove(source) != null) {
+            GlobalScope.launch {
+                try {
+                    AppDatabase.getDatabase()?.sourceRepository()
+                        ?.delete(DatabaseSource(source.id, source.getName(), source.getUrl()))
+                } catch (ex: java.lang.Exception) {
+                    if (onError != null)
+                        onError(ex);
+                }
+            }
+
             sourceController.getSink().add(sources);
-            return true;
         }
-        return false;
     };
 
     /**
      * Register a new source by its url. Checks if its a valid rss feed and parses the feeds title.
      */
     suspend fun registerSource(url: String) {
-        try{
-            val name = RssService.parseMeta(url);
-            val source = RSSSource(name!!, url)
+        try {
+            if (sources.any { source -> source.getUrl().equals(url, ignoreCase = false) })
+                throw Exception("Feed ist bereits vorhanden!");
 
+            val name = RssService.parseMeta(url);
+
+            var id: Long? = AppDatabase.getDatabase()?.sourceRepository()
+                ?.insert(DatabaseSource(0, name!!, url)) ?: return;
+
+            val source = RSSSource(id!!, name!!, url)
             sources.add(source);
 
             sourceController.getSink().add(sources);
-        }catch(ex: Exception){
+        } catch (ex: Exception) {
             throw Exception(ex.message ?: "Ungültiger RSS Feed")
         }
     }

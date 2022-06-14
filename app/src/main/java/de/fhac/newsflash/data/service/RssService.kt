@@ -126,6 +126,7 @@ object RssService {
                 "link" -> link = readNewsLink(parser)
                 "enclosure" -> imageUrl = imageUrl ?: readImageLinkEnclosure(parser) //Image type one
                 "content:encoded" -> imageUrl = imageUrl ?: readImageLinkEncoded(parser)//Image type two
+                "media:group" -> imageUrl = imageUrl ?: readImageLinkGroup(parser) //Image type three
                 "pubDate" -> date = readPubdate(parser)
                 else -> if (parser.next() == XmlPullParser.TEXT) {
                     parser.nextTag()
@@ -176,6 +177,31 @@ object RssService {
 
         parser.require(XmlPullParser.END_TAG, null, "content:encoded")
         return link
+    }
+
+    // Processes image link tags in the feed.
+    @Throws(IOException::class, XmlPullParserException::class)
+    private fun readImageLinkGroup(parser: XmlPullParser): String? {
+        parser.require(XmlPullParser.START_TAG, null, "media:group")
+
+        var result: String? = null
+
+        while (parser.next() != XmlPullParser.END_TAG) { //Read until entry ended
+            if (parser.eventType != XmlPullParser.START_TAG)
+                continue;
+
+            if(parser.name == "media:content"){
+                if(parser.getAttributeValue(null, "medium").contains("image") && result == null)
+                    result = parser.getAttributeValue(null, "url")
+
+                parser.nextTag()
+            }
+        }
+
+
+
+        parser.require(XmlPullParser.END_TAG, null, "media:group")
+        return result
     }
 
     // Processes description tags in the feed.

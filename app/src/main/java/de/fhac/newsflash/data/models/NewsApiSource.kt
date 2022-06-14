@@ -2,7 +2,7 @@ package de.fhac.newsflash.data.models
 
 import java.net.URL
 
-class NewsApiSource : ISource {
+class NewsApiSource(override val id: Long) : ISource {
 
     override fun getName(): String {
         return "News Api"
