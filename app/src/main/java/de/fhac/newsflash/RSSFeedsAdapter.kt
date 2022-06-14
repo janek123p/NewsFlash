@@ -7,19 +7,25 @@ import android.view.ViewGroup
 import android.widget.*
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.SourceController
+import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class RSSFeedsAdapter(private val context: Context) : BaseAdapter() {
 
-    private lateinit var feeds: List<RSSSource>
+    private var feeds: List<RSSSource> = mutableListOf()
+    private var subscription = SourceController.getSourceStream().listen(this::updateFeeds, true)
 
     init {
-        updateFeeds()
+
     }
 
-    fun updateFeeds() {
-        feeds = SourceController.getSources().filterIsInstance<RSSSource>().toMutableList()
-        notifyDataSetChanged()
+    fun updateFeeds(sources: List<ISource>?) {
+        GlobalScope.launch {
+            feeds = sources?.filterIsInstance<RSSSource>()?.toMutableList() ?: mutableListOf();
+            notifyDataSetChanged()
+        }
     }
 
     override fun getCount(): Int {
@@ -45,7 +51,6 @@ class RSSFeedsAdapter(private val context: Context) : BaseAdapter() {
 
         convertView.findViewById<Button>(R.id.bt_remove).setOnClickListener {
             SourceController.deleteSource(feed)
-            updateFeeds()
         }
 
         return convertView;

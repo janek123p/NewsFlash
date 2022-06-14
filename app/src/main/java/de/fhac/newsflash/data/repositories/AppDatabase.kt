@@ -16,7 +16,11 @@ abstract class AppDatabase : RoomDatabase() {
      */
     companion object {
         private var INSTANCE: AppDatabase? = null
-        fun getDatabase(context: Context): AppDatabase {
+        fun getDatabase(): AppDatabase?{
+            return INSTANCE
+        }
+
+        fun initDatabase(context: Context): AppDatabase {
             if (INSTANCE == null) {
                 synchronized(this) {
                     INSTANCE =

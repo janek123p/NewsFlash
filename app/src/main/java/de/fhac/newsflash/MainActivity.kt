@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
 import org.jsoup.Jsoup
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
+        AppDatabase.initDatabase(applicationContext)
         initNewsData()
         initBottomSheet()
         addCallbacks()

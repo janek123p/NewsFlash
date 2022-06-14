@@ -5,6 +5,7 @@ import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.runBlocking
+import java.lang.Exception
 
 object NewsController {
 
@@ -12,6 +13,7 @@ object NewsController {
 
     private val newsController: StreamController<List<News>> = StreamController();
     private val favoritesController: StreamController<List<News>> = StreamController();
+    private val errorController: StreamController<List<Exception>> = StreamController();
 
     /**
      * Load Database
@@ -19,6 +21,8 @@ object NewsController {
     init {
 
     }
+
+    fun getErrorStream() = errorController.getStream();
 
     /**
      * Get news marked as favorite
@@ -39,7 +43,7 @@ object NewsController {
     fun addFavorite(news: News): Boolean {
         if (newsController.getStream().getLatest()?.contains(news) != true) return false;
 
-        if(favorites.add(news)){
+        if (favorites.add(news)) {
             favoritesController.getSink().add(favorites);
             return true;
         }
@@ -50,7 +54,7 @@ object NewsController {
      * Removes a news from the users favorites
      */
     fun removeFavorite(news: News): Boolean {
-        if(favorites.remove(news)){
+        if (favorites.remove(news)) {
             favoritesController.getSink().add(favorites);
             return true;
         }
@@ -62,28 +66,39 @@ object NewsController {
      */
     suspend fun refresh(filter: Filter? = null) {
         val filtered = mutableListOf<News>()
+        var errors = mutableListOf<Exception>()
 
-        for (source in SourceController.getSources()) {
+        if(SourceController.getSourceStream().getLatest() == null){
+            newsController.getSink().add(null);
+            return
+        };
+
+        for (source in SourceController.getSourceStream().getLatest()!!) {
             if (filter != null && filter!!.sources.contains(source)) continue;
 
-            val news = RssService.parseNews(source.getUrl());
+            try {
+                val news = RssService.parseNews(source.getUrl());
 
-            if (filter != null && filter!!.tags.isNotEmpty()) {
-                filtered.addAll(news.filter { news ->
-                    filter!!.tags.any { tag ->
-                        tag.keywords.any { s ->
-                            news.title.contains(
-                                s
-                            ) || news.description.contains(s)
+                if (filter != null && filter!!.tags.isNotEmpty()) {
+                    filtered.addAll(news.filter { news ->
+                        filter!!.tags.any { tag ->
+                            tag.keywords.any { s ->
+                                news.title.contains(
+                                    s
+                                ) || news.description.contains(s)
+                            }
                         }
-                    }
-                });
-                return;
-            }
+                    });
+                    return;
+                }
 
-            filtered.addAll(news);
+                filtered.addAll(news);
+            } catch (ex: Exception) {
+                errors.add(ex);
+            }
         }
 
+        errorController.getSink().add(errors);
         newsController.getSink().add(filtered);
     }
 }

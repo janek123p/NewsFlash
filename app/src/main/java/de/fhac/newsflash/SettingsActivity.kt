@@ -86,7 +86,6 @@ class SettingsActivity : AppCompatActivity() {
                 try {
                     SourceController.registerSource(binding.txtRssLink.text.toString())
                     runOnUiThread {
-                        rssFeedListAdapter.updateFeeds()
                         clearRSSLinkError()
                         binding.txtRssLink.setText("")
                         binding.loadingIndicator.visibility = View.GONE
