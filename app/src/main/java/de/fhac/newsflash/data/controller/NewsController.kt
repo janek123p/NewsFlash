@@ -3,13 +3,15 @@ package de.fhac.newsflash.data.controller
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.service.RssService
+import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.runBlocking
 
 object NewsController {
 
-    private var cached: MutableList<News> = mutableListOf();
-    private var favorites: MutableList<News> = mutableListOf();
-    private var filter: Filter? = null;
+    private val favorites: MutableList<News> = mutableListOf();
+
+    private val newsController: StreamController<List<News>> = StreamController();
+    private val favoritesController: StreamController<List<News>> = StreamController();
 
     /**
      * Load Database
@@ -19,23 +21,9 @@ object NewsController {
     }
 
     /**
-     * Set the filter for sources and tags
-     */
-    fun setFilter(filter: Filter) {
-        this.filter = filter;
-    }
-
-    /**
-     * Remove the current filter
-     */
-    fun resetFilter() {
-        filter = null;
-    }
-
-    /**
      * Get news marked as favorite
      */
-    fun getFavorites() = favorites
+    fun getFavoritesStream() = favoritesController.getStream();
 
     /**
      * Get all cached news, refresh if necessary
@@ -43,34 +31,37 @@ object NewsController {
      * @param refresh If true refreshed the newsfeed
      * @return All loaded news
      */
-    suspend fun getNews(refresh: Boolean = false): List<News> {
-        if (cached.isEmpty() || refresh)
-            runBlocking {
-                refresh();
-            }
-
-        return cached;
-    }
+    fun getNewsStream() = newsController.getStream();
 
     /**
      * Adds a news to the users favorites
      */
     fun addFavorite(news: News): Boolean {
-        if (!cached.contains(news)) return false;
+        if (newsController.getStream().getLatest()?.contains(news) != true) return false;
 
-        return favorites.add(news)
+        if(favorites.add(news)){
+            favoritesController.getSink().add(favorites);
+            return true;
+        }
+        return false;
     }
 
     /**
      * Removes a news from the users favorites
      */
-    fun removeFavorite(news: News) = favorites.remove(news);
+    fun removeFavorite(news: News): Boolean {
+        if(favorites.remove(news)){
+            favoritesController.getSink().add(favorites);
+            return true;
+        }
+        return false;
+    };
 
     /**
      * Refreshes the newsfeed. Takes the specified filter into account.
      */
-    private suspend fun refresh() {
-        cached.clear();
+    suspend fun refresh(filter: Filter? = null) {
+        val filtered = mutableListOf<News>()
 
         for (source in SourceController.getSources()) {
             if (filter != null && filter!!.sources.contains(source)) continue;
@@ -78,7 +69,7 @@ object NewsController {
             val news = RssService.parseNews(source.getUrl());
 
             if (filter != null && filter!!.tags.isNotEmpty()) {
-                cached.addAll(news.filter { news ->
+                filtered.addAll(news.filter { news ->
                     filter!!.tags.any { tag ->
                         tag.keywords.any { s ->
                             news.title.contains(
@@ -90,7 +81,9 @@ object NewsController {
                 return;
             }
 
-            cached.addAll(news);
+            filtered.addAll(news);
         }
+
+        newsController.getSink().add(filtered);
     }
 }

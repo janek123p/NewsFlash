@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                 imgThumbnail.visibility = View.GONE
             }
 
-            if (news in NewsController.getFavorites()) {
+            if (NewsController.getFavoritesStream().getLatest()?.contains(news) == true) {
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             } else {
                 btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
@@ -283,7 +283,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
-            if (news in NewsController.getFavorites()) {
+            if (NewsController.getFavoritesStream().getLatest()?.contains(news) == true) {
                 NewsController.removeFavorite(news)
                 Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT)
                     .show()

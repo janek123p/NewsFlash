@@ -10,6 +10,7 @@ import android.widget.*
 import com.bumptech.glide.Glide
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.data.stream.StreamSubscription
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
@@ -20,15 +21,24 @@ class NewsListAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {
 
+    private var sub: StreamSubscription<List<News>> = NewsController.getNewsStream().listen(this::notify, true);
+
     private var data: List<News>? = null
 
     fun launchReloadData(refresh: Boolean, onFinished: Runnable? = null) {
         GlobalScope.launch {
-            data =
-                NewsController.getNews(refresh = refresh)
-                    .sortedByDescending { news -> news.pubDate }
-            mainActivity.runOnUiThread { notifyDataSetChanged() }
+            NewsController.refresh()
             onFinished?.run()
+        }
+    }
+
+    private fun notify(newsList: List<News>?){
+        GlobalScope.launch {
+            data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf();
+
+            mainActivity.runOnUiThread{
+                notifyDataSetChanged()
+            }
         }
     }
 

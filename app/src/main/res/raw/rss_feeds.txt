@@ -247,11 +247,11 @@ https://rp-online.de/nrw/staedte/juechen/feed.rss
 https://rp-online.de/nrw/staedte/rommerskirchen/feed.rss
 //Frontiers in ...
 https://www.frontiersin.org/journals/aging/rss
-https://journal.frontiersin.org/journal/aging-neuroscience/rss
+http://journal.frontiersin.org/journal/aging-neuroscience/rss
 https://www.frontiersin.org/journals/agronomy/rss
 https://www.frontiersin.org/journals/allergy/rss
 https://www.frontiersin.org/journals/analytical-science/rss
-https://journal.frontiersin.org/journal/applied-mathematics-and-statistics/rss
+http://journal.frontiersin.org/journal/applied-mathematics-and-statistics/rss
 https://www.frontiersin.org/journals/artificial-intelligence/rss
 https://www.frontiersin.org/journals/behavioral-neuroscience/rss
 https://www.frontiersin.org/journals/big-data/rss
@@ -368,14 +368,14 @@ https://www.frontiersin.org/journals/virology/rss
 https://www.frontiersin.org/journals/virtual-reality/rss
 https://www.frontiersin.org/journals/water/rss
 //Weitere
-https://rss.cnn.com/rss/cnn_topstories.rss
-https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml
+http://rss.cnn.com/rss/cnn_topstories.rss
+http://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml
 https://www.huffpost.com/section/front-page/feed?x=1
-//https://www.foxnews.com/about/rss/
-https://rssfeeds.usatoday.com/UsatodaycomNation-TopStories
+//http://www.foxnews.com/about/rss/
+http://rssfeeds.usatoday.com/UsatodaycomNation-TopStories
 https://lifehacker.com/rss
 https://cdn.feedcontrol.net/8/1114-wioSIX3uu8MEj.xml
-https://www.politico.com/rss/politicopicks.xml
+http://www.politico.com/rss/politicopicks.xml
 https://www.yahoo.com/news/rss
 https://help.npr.org/customer/portal/articles/2094175-where-can-i-find-npr-rss-feeds-
 https://www.latimes.com/local/rss2.0.xml
@@ -383,6 +383,6 @@ https://feeds.bbci.co.uk/news/world/rss.xml
 https://rss.cnn.com/rss/edition_world.rss
 https://feeds.washingtonpost.com/rss/world
 https://www.cnbc.com/id/100727362/device/rss/rss.html
-https://abcnews.go.com/abcnews/internationalheadlines
-https://www.nature.com/nmat/journal/vaop/ncurrent/rss.rdf
+http://abcnews.go.com/abcnews/internationalheadlines
+http://www.nature.com/nmat/journal/vaop/ncurrent/rss.rdf
 https://newsfeed.zeit.de/
