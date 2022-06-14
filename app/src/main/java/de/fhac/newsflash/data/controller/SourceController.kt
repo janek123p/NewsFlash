@@ -77,7 +77,7 @@ object SourceController {
             val name = RssService.parseMeta(url);
 
             var id: Long? = AppDatabase.getDatabase()?.sourceRepository()
-                ?.insert(DatabaseSource(0, name!!, url)) ?: return;
+                ?.insert(DatabaseSource(null, name!!, url)) ?: return;
 
             val source = RSSSource(id!!, name!!, url)
             sources.add(source);

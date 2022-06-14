@@ -1,14 +1,19 @@
 package de.fhac.newsflash.data.repositories
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import de.fhac.newsflash.data.repositories.models.DatabaseSource
 
-@Database(entities = [DatabaseSource::class], version = 1)
+@Database(
+    entities = [DatabaseSource::class],
+    version = 1,
+    autoMigrations = []
+)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun sourceRepository() : ISourceRepository
+    abstract fun sourceRepository(): ISourceRepository
 
 
     /**
@@ -16,7 +21,7 @@ abstract class AppDatabase : RoomDatabase() {
      */
     companion object {
         private var INSTANCE: AppDatabase? = null
-        fun getDatabase(): AppDatabase?{
+        fun getDatabase(): AppDatabase? {
             return INSTANCE
         }
 
@@ -24,7 +29,7 @@ abstract class AppDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(this) {
                     INSTANCE =
-                        Room.databaseBuilder(context,AppDatabase::class.java, "news_database")
+                        Room.databaseBuilder(context, AppDatabase::class.java, "news_database")
                             .build()
                 }
             }
