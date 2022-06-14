@@ -594,5 +594,4 @@ https://www.zdf.de/rss/zdf/nachrichten
 https://www.tagesschau.de/xml/rss2/
 http://www.zdf.de/rss/podcast/video/zdf/kinder/logo
 http://www.zdf.de/rss/podcast/audio/zdf/kinder/logo
-http://content.zdf.de/podcast/zdf_logo/logo_v.xml
 

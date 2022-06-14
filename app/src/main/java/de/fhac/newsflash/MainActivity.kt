@@ -1,6 +1,7 @@
 package de.fhac.newsflash
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -269,13 +270,19 @@ class MainActivity : AppCompatActivity() {
      * Opens current news in browser
      */
     private fun showCurrentNewsInBrowser() {
-        if (currentNews != null) {
-            CustomTabsIntent.Builder()
-                .setInstantAppsEnabled(false)
-                .setUrlBarHidingEnabled(true)
-                .setShowTitle(false)
-                .build()
-                .launchUrl(this, Uri.parse(currentNews!!.url))
+        if (currentNews != null && currentNews!!.url.isNotEmpty()) {
+            try {
+                CustomTabsIntent.Builder()
+                    .setInstantAppsEnabled(false)
+                    .setUrlBarHidingEnabled(true)
+                    .setShowTitle(false)
+                    .build()
+                    .launchUrl(this, Uri.parse(currentNews!!.url))
+            } catch (e: Exception) {
+                val browserIntent = Intent(Intent.ACTION_VIEW)
+                browserIntent.data = Uri.parse(currentNews!!.url)
+                startActivity(browserIntent)
+            }
         }
     }
 
