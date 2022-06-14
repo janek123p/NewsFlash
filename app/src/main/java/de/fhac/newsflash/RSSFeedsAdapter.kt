@@ -5,26 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class RSSFeedsAdapter(private val context: Context) : BaseAdapter() {
+class RSSFeedsAdapter(private val settingsActivit: SettingsActivity) : BaseAdapter() {
 
     private var feeds: List<RSSSource> = mutableListOf()
     private var subscription = SourceController.getSourceStream().listen(this::updateFeeds, true)
 
-    init {
-
-    }
-
-    fun updateFeeds(sources: List<ISource>?) {
+    private fun updateFeeds(sources: List<ISource>?) {
         GlobalScope.launch {
             feeds = sources?.filterIsInstance<RSSSource>()?.toMutableList() ?: mutableListOf();
-            notifyDataSetChanged()
+            settingsActivit.runOnUiThread { notifyDataSetChanged() }
         }
     }
 
@@ -41,8 +36,10 @@ class RSSFeedsAdapter(private val context: Context) : BaseAdapter() {
     }
 
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        var convertView = inflater.inflate(R.layout.rss_feed_card, null)
+        val inflater =
+            settingsActivit.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        var convertView = view ?: inflater.inflate(R.layout.rss_feed_card, null)
 
         var feed = feeds[position]
 
