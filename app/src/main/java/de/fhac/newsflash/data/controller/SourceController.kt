@@ -13,28 +13,25 @@ import kotlinx.coroutines.launch
 
 object SourceController {
 
-    private var sources = mutableListOf<ISource>(
-//        RSSSource("Tagesschau", "https://www.tagesschau.de/xml/rss2/"),
-//        RSSSource("Deutsche Welle", "https://rss.dw.com/xml/rss-de-all"),
-//        RSSSource("ZDF", "https://www.zdf.de/rss/zdf/nachrichten")
-    )
+    private var sources = mutableListOf<ISource>()
 
     private val sourceController = StreamController<MutableList<ISource>>();
 
     init {
         var feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
-            ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }?.toMutableList<ISource>()
+            ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }
+            ?.toMutableList<ISource>()
 
-        if(feeds == null || feeds.isEmpty()){
+        if (feeds == null || feeds.isEmpty()) {
             AppDatabase.getDatabase()?.sourceRepository()?.insertAll(
-                DatabaseSource(name =  "Tagesschau", url = "https://www.tagesschau.de/xml/rss2/"),
-                DatabaseSource(name=  "Deutsche Welle", url = "https://rss.dw.com/xml/rss-de-all"),
-                DatabaseSource(name = "ZDF", url= "https://www.zdf.de/rss/zdf/nachrichten")
+                DatabaseSource(name = "Tagesschau", url = "https://www.tagesschau.de/xml/rss2/"),
+                DatabaseSource(name = "Deutsche Welle", url = "https://rss.dw.com/xml/rss-de-all")
             )
         }
 
         feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
-            ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }?.toMutableList<ISource>()
+            ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }
+            ?.toMutableList<ISource>()
 
         if (feeds != null && feeds.isNotEmpty())
             sources = feeds;

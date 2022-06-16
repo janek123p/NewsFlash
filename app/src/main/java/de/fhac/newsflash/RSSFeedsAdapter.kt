@@ -11,43 +11,67 @@ import de.fhac.newsflash.data.models.RSSSource
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class RSSFeedsAdapter(private val settingsActivit: SettingsActivity) : BaseAdapter() {
+/**
+ * Adapter class to show all user defined RSS feeds
+ */
+class RSSFeedsAdapter(private val settingsActivity: SettingsActivity) : BaseAdapter() {
 
     private var feeds: List<RSSSource> = mutableListOf()
     private var subscription = SourceController.getSourceStream().listen(this::updateFeeds, true)
 
+    /**
+     * Update currently selected feeds
+     */
     private fun updateFeeds(sources: List<ISource>?) {
         GlobalScope.launch {
             feeds = sources?.filterIsInstance<RSSSource>()?.toMutableList() ?: mutableListOf();
-            settingsActivit.runOnUiThread { notifyDataSetChanged() }
+            settingsActivity.runOnUiThread { notifyDataSetChanged() }
         }
     }
 
+    /**
+     * return count of rss feeds
+     */
     override fun getCount(): Int {
         return feeds.count()
     }
 
+    /**
+     * return item at specific position
+     */
     override fun getItem(pos: Int): Any {
         return feeds[pos]
     }
 
+    /**
+     * return item it at specific position
+     */
     override fun getItemId(pos: Int): Long {
         return pos.toLong()
     }
 
+    /**
+     * determine view of each element and add click listener for delete button
+     */
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
         val inflater =
-            settingsActivit.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            settingsActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        var convertView = view ?: inflater.inflate(R.layout.rss_feed_card, null)
+        val convertView = view ?: inflater.inflate(R.layout.rss_feed_card, null)
 
-        var feed = feeds[position]
+        val feed = feeds[position]
 
         convertView.findViewById<TextView>(R.id.txt_name).text = feed.getName()
         convertView.findViewById<TextView>(R.id.txt_link).text = feed.getUrl().toString()
 
         convertView.findViewById<Button>(R.id.bt_remove).setOnClickListener {
-            SourceController.deleteSource(feed)
+            SourceController.deleteSource(feed) { exc ->
+                Toast.makeText(
+                    settingsActivity,
+                    "Fehler beim Entfernen des RSS-Feeds : ${exc.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         return convertView;

@@ -1,7 +1,6 @@
 package de.fhac.newsflash
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -163,7 +162,15 @@ class MainActivity : AppCompatActivity() {
             btShare.setOnClickListener { shareCurrentNews() }
             btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
             btSave.setOnClickListener { saveOrRemoveCurrentNewsToFavorites() }
+            btRefresh.setOnClickListener { refreshCurrentNews() }
         }
+    }
+
+    /**
+     * Reloads URL in WebView
+     */
+    private fun refreshCurrentNews() {
+        bottomSheetBinding.webContent.loadUrl(currentNews!!.url)
     }
 
     /**

@@ -1,26 +1,26 @@
 package de.fhac.newsflash
 
-import android.content.res.Resources
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
-import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintLayoutStates
-import androidx.core.view.marginTop
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.databinding.BottomSheetBinding
 
+/**
+ * Callback for News Bottom sheet
+ */
 class NewsBottomSheetCallback(
     private val binding: BottomSheetBinding,
     private val mainActivity: MainActivity
 ) :
     BottomSheetBehavior.BottomSheetCallback() {
 
-
     private var lastBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED
 
+    /**
+     * Methode to determine actions, when bottom sheet state has changed
+     */
     override fun onStateChanged(bottomSheet: View, newState: Int) {
         when (newState) {
             BottomSheetBehavior.STATE_EXPANDED -> {
@@ -37,9 +37,7 @@ class NewsBottomSheetCallback(
                 webViewGroup.visibility = View.VISIBLE
                 when (lastBottomSheetState) {
                     BottomSheetBehavior.STATE_COLLAPSED -> webViewGroup.alpha = 0f
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        previewGroup.alpha = 1f
-                    }
+                    BottomSheetBehavior.STATE_EXPANDED -> previewGroup.alpha = 1f
                 }
             }
             BottomSheetBehavior.STATE_HIDDEN -> {
@@ -49,13 +47,17 @@ class NewsBottomSheetCallback(
         lastBottomSheetState = newState
     }
 
+    /**
+     * Method to determine behavior during bottom sheet slide
+     */
     override fun onSlide(bottomSheet: View, slideOffset: Float) {
-        println("ONSLIDE")
         if (slideOffset > 0) {
             binding.apply {
+                // Fading animation between WebView and preview group
                 webViewGroup.alpha = slideOffset
                 previewGroup.alpha = 1f - slideOffset
                 if (slideOffset > 0.5) {
+                    // Set corner radius and shadow size dependent on slideOffset
                     var drawable = mainConstraintLayout.background as GradientDrawable
                     drawable.cornerRadius =
                         (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.cornerRadiusBig))
@@ -69,10 +71,14 @@ class NewsBottomSheetCallback(
             }
         } else {
             setWebContentInvisible()
+            // Add background blur animation (Android 12 and above)
             mainActivity.setBackgroundBlurred(1f + slideOffset)
         }
     }
 
+    /**
+     * Sets top margin of a constraint layout
+     */
     private fun setMarginTop(layout: ConstraintLayout, margin: Int) {
         var layoutParams = layout.layoutParams as FrameLayout.LayoutParams
         layoutParams.topMargin = margin
@@ -80,17 +86,25 @@ class NewsBottomSheetCallback(
     }
 
 
+    /**
+     * Sets web content visibility to gone and visibility of preview group to visible
+     */
     private fun setWebContentInvisible() {
         binding.apply {
             previewGroup.visibility = View.VISIBLE
             webViewGroup.visibility = View.GONE
+            btRefresh.visibility = View.GONE
         }
     }
 
+    /**
+     * Set visibility of preview group to visible and web content gone
+     */
     private fun setWebContentVisible() {
         binding.apply {
             previewGroup.visibility = View.GONE
             webViewGroup.visibility = View.VISIBLE
+            btRefresh.visibility = View.VISIBLE
         }
     }
 }

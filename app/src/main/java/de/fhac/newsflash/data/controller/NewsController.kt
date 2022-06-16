@@ -9,11 +9,11 @@ import java.lang.Exception
 
 object NewsController {
 
-    private val favorites: MutableList<News> = mutableListOf();
+    private val favorites: MutableList<News> = mutableListOf()
 
-    private val newsController: StreamController<List<News>> = StreamController();
-    private val favoritesController: StreamController<List<News>> = StreamController();
-    private val errorController: StreamController<List<Exception>> = StreamController();
+    private val newsController: StreamController<List<News>> = StreamController()
+    private val favoritesController: StreamController<List<News>> = StreamController()
+    private val errorController: StreamController<List<Exception>> = StreamController()
 
     /**
      * Load Database
@@ -22,12 +22,12 @@ object NewsController {
 
     }
 
-    fun getErrorStream() = errorController.getStream();
+    fun getErrorStream() = errorController.getStream()
 
     /**
      * Get news marked as favorite
      */
-    fun getFavoritesStream() = favoritesController.getStream();
+    fun getFavoritesStream() = favoritesController.getStream()
 
     /**
      * Get all cached news, refresh if necessary
@@ -35,7 +35,7 @@ object NewsController {
      * @param refresh If true refreshed the newsfeed
      * @return All loaded news
      */
-    fun getNewsStream() = newsController.getStream();
+    fun getNewsStream() = newsController.getStream()
 
     /**
      * Adds a news to the users favorites
@@ -44,10 +44,10 @@ object NewsController {
         if (newsController.getStream().getLatest()?.contains(news) != true) return false;
 
         if (favorites.add(news)) {
-            favoritesController.getSink().add(favorites);
-            return true;
+            favoritesController.getSink().add(favorites)
+            return true
         }
-        return false;
+        return false
     }
 
     /**
@@ -68,37 +68,37 @@ object NewsController {
         val filtered = mutableListOf<News>()
         var errors = mutableListOf<Exception>()
 
-        if(SourceController.getSourceStream().getLatest() == null){
-            newsController.getSink().add(null);
+        if (SourceController.getSourceStream().getLatest() == null) {
+            newsController.getSink().add(null)
             return
         };
 
         for (source in SourceController.getSourceStream().getLatest()!!) {
-            if (filter != null && filter!!.sources.contains(source)) continue;
+            if (filter != null && filter.sources.contains(source)) continue
 
             try {
                 val news = RssService.parseNews(source.getUrl());
 
-                if (filter != null && filter!!.tags.isNotEmpty()) {
+                if (filter != null && filter.tags.isNotEmpty()) {
                     filtered.addAll(news.filter { news ->
-                        filter!!.tags.any { tag ->
+                        filter.tags.any { tag ->
                             tag.keywords.any { s ->
                                 news.title.contains(
                                     s
                                 ) || news.description.contains(s)
                             }
                         }
-                    });
-                    return;
+                    })
+                    return
                 }
 
-                filtered.addAll(news);
+                filtered.addAll(news)
             } catch (ex: Exception) {
-                errors.add(ex);
+                errors.add(ex)
             }
         }
 
-        errorController.getSink().add(errors);
-        newsController.getSink().add(filtered);
+        errorController.getSink().add(errors)
+        newsController.getSink().add(filtered)
     }
 }

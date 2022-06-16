@@ -1,6 +1,5 @@
 package de.fhac.newsflash
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,6 +13,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.streams.toList
 
+/**
+ * Activity to handle app settings, especially managing user selected RSS feeds
+ */
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
@@ -37,6 +39,9 @@ class SettingsActivity : AppCompatActivity() {
         addOnAddFeedClickedListener()
     }
 
+    /**
+     * Read list of predefined RSS feeds
+     */
     private suspend fun readRSSList(): MutableList<String> {
         val result = GlobalScope.async {
             resources.openRawResource(R.raw.rss_feeds).bufferedReader().use { reader ->
@@ -82,6 +87,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun addOnAddFeedClickedListener() {
         binding.btAddRssFeed.setOnClickListener {
             binding.loadingIndicator.visibility = View.VISIBLE
+
             GlobalScope.launch {
                 try {
                     SourceController.registerSource(binding.txtRssLink.text.toString())
