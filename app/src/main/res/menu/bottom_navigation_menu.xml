@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/news"
+        android:id="@+id/news_nav"
         android:enabled="true"
         android:icon="@drawable/rss_feed"
         android:title="@string/news"/>
     <item
-        android:id="@+id/fav"
+        android:id="@+id/favorites_nav"
         android:enabled="true"
         android:icon="@drawable/rss_feed"
         android:title="@string/fav"/>
     <item
-        android:id="@+id/settings"
+        android:id="@+id/settings_nav"
         android:enabled="true"
         android:icon="@drawable/rss_feed"
         android:title="@string/settings"/>

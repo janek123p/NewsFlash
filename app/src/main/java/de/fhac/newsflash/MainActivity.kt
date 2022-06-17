@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         initNewsData()
         initBottomSheet()
         addCallbacks()
-        addBottomNavigationCallback()
+        addNavigationCallbacks()
     }
 
     /**
@@ -85,11 +85,19 @@ class MainActivity : AppCompatActivity() {
     /**
      * Add Callbacks for bottom navigation bar
      */
-    private fun addBottomNavigationCallback() {
+    private fun addNavigationCallbacks() {
         binding.bottomNavigation.apply {
             setOnItemSelectedListener {
                 when (it.itemId) {
-                    R.id.settings -> {
+                    R.id.favorites_nav -> {
+                        val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                        startActivity(intent)
+                        return@setOnItemSelectedListener true
+                    }
+                }
+
+                when (it.itemId) {
+                    R.id.news_nav -> {
                         val intent = Intent(this@MainActivity, SettingsActivity::class.java)
                         startActivity(intent)
                         return@setOnItemSelectedListener true

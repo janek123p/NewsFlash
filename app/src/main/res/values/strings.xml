@@ -15,4 +15,6 @@
     <string name="invalid_rss_feed">Ungültiger RSS-Feed</string>
     <string name="saved_to_favs">Die Nachricht wurde zu deinen Favoriten hinzugefügt.</string>
     <string name="removed_from_favs">Die Nachricht wurde aus deinen Favoriten entfernt.</string>
+    <string name="source_title">Quellen</string>
+    <string name="topic_title">Themen</string>
 </resources>

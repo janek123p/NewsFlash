@@ -13,6 +13,15 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+        <include
+            android:id="@+id/title_bar"
+            layout="@layout/title_bar"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/filter_container"
+            layout="@layout/filter_container" />
+
         <ProgressBar
             android:id="@+id/loading_indicator_top"
             style="?android:attr/progressBarStyle"
@@ -31,9 +40,8 @@
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@id/filter_container" />
 
-        </ListView>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
