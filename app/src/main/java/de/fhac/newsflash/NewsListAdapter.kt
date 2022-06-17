@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import com.bumptech.glide.Glide
 import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.stream.StreamSubscription
 import kotlinx.coroutines.GlobalScope
@@ -27,7 +28,7 @@ class NewsListAdapter(
     private var data: List<News>? = NewsController.getNewsStream().getLatest()
 
 
-    fun launchReloadData(onFinished: Runnable? = null) {
+    fun launchReloadData(onFinished: Runnable? = null, filter: Filter?, filterFavourites: Boolean? = false) {
         GlobalScope.launch {
             NewsController.refresh()
             onFinished?.run()

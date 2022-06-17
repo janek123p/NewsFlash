@@ -23,6 +23,7 @@ import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.databinding.ActivityMainBinding
@@ -31,11 +32,14 @@ import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
 class MainActivity : AppCompatActivity() {
+    private val filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
+    private lateinit var filterAdapter: FilterAdapter
+    private var currentFilter: Filter? = null
 
     /**
      * Initialize UI and logic of MainActivity
@@ -47,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         AppDatabase.initDatabase(applicationContext)
+        initFilters()
         initNewsData()
         initBottomSheet()
         addCallbacks()
@@ -106,6 +111,11 @@ class MainActivity : AppCompatActivity() {
                 return@setOnItemSelectedListener false
             }
         }
+
+        binding.titleBar.settingsNav.setOnClickListener {
+            val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     /**
@@ -121,12 +131,22 @@ class MainActivity : AppCompatActivity() {
      * Reload News
      */
     private fun reloadNewsData() {
+        var currentFilter = null
+        var filterFavourites = false
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         newsListAdapter.launchReloadData(onFinished = {
             runOnUiThread {
                 binding.loadingIndicatorTop.visibility = View.GONE
             }
-        })
+        }, currentFilter, filterFavourites)
+    }
+
+    /**
+     * Initializes and loads Filters
+     */
+    private fun initFilters() {
+        filterAdapter = FilterAdapter(this)
+        binding.filterContainer.sourceFilterContainer.adapter = filterAdapter
     }
 
     /**
