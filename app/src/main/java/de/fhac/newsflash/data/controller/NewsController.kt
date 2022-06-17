@@ -64,7 +64,7 @@ object NewsController {
     /**
      * Refreshes the newsfeed. Takes the specified filter into account.
      */
-    suspend fun refresh(filter: Filter? = null) {
+    suspend fun refresh(filter: Filter? = null, filterFavorites: Boolean? = false) {
         val filtered = mutableListOf<News>()
         var errors = mutableListOf<Exception>()
 

@@ -10,9 +10,4 @@
         android:enabled="true"
         android:icon="@drawable/rss_feed"
         android:title="@string/fav"/>
-    <item
-        android:id="@+id/settings_nav"
-        android:enabled="true"
-        android:icon="@drawable/rss_feed"
-        android:title="@string/settings"/>
 </menu>

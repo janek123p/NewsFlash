@@ -28,7 +28,7 @@ class NewsListAdapter(
     private var data: List<News>? = NewsController.getNewsStream().getLatest()
 
 
-    fun launchReloadData(onFinished: Runnable? = null, filter: Filter?, filterFavourites: Boolean? = false) {
+    fun launchReloadData(onFinished: Runnable? = null, filter: Filter? = null, filterFavourites: Boolean? = false) {
         GlobalScope.launch {
             NewsController.refresh()
             onFinished?.run()
@@ -37,7 +37,7 @@ class NewsListAdapter(
 
     private fun notify(newsList: List<News>?) {
         GlobalScope.launch {
-            data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf();
+            data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
 
             mainActivity.runOnUiThread {
                 notifyDataSetChanged()

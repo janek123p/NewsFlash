@@ -16,10 +16,11 @@
         <include
             android:id="@+id/title_bar"
             layout="@layout/title_bar"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <include
-            android:id="@+id/filter_container"
+            android:id="@+id/filter"
             layout="@layout/filter_container" />
 
         <ProgressBar
@@ -31,7 +32,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/filter" />
 
         <ListView
             android:id="@+id/news_list"
@@ -40,7 +41,7 @@
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/filter_container" />
+            app:layout_constraintTop_toBottomOf="@id/filter" />
 
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

@@ -32,7 +32,7 @@ import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
 class MainActivity : AppCompatActivity() {
-    private val filterFavourites: Boolean = false
+    private var filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
@@ -95,16 +95,16 @@ class MainActivity : AppCompatActivity() {
             setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.favorites_nav -> {
-                        val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                        startActivity(intent)
+                        filterFavourites = true
+                        reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
                 }
 
                 when (it.itemId) {
                     R.id.news_nav -> {
-                        val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                        startActivity(intent)
+                        filterFavourites = false
+                        reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
                 }
@@ -131,8 +131,6 @@ class MainActivity : AppCompatActivity() {
      * Reload News
      */
     private fun reloadNewsData() {
-        var currentFilter = null
-        var filterFavourites = false
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         newsListAdapter.launchReloadData(onFinished = {
             runOnUiThread {
@@ -146,7 +144,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initFilters() {
         filterAdapter = FilterAdapter(this)
-        binding.filterContainer.sourceFilterContainer.adapter = filterAdapter
+        binding.filter.sourceFilterContainer.adapter = filterAdapter
     }
 
     /**
@@ -191,6 +189,16 @@ class MainActivity : AppCompatActivity() {
             btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
             btSave.setOnClickListener { saveOrRemoveCurrentNewsToFavorites() }
             btRefresh.setOnClickListener { refreshCurrentNews() }
+        }
+
+        binding.filter.apply {
+            filterDropdownButton.setOnClickListener {
+                if (filters.visibility == View.VISIBLE) {
+                    filters.visibility = View.GONE
+                } else if (filters.visibility == View.GONE) {
+                    filters.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
@@ -345,20 +353,20 @@ class MainActivity : AppCompatActivity() {
     fun resetCurrentNews() {
         currentNews = null
     }
-}
 
-class ChromeClient(
-    private val progressBar: ProgressBar,
-    private val webCardView: CardView
-) :
-    WebChromeClient() {
+    class ChromeClient(
+        private val progressBar: ProgressBar,
+        private val webCardView: CardView
+    ) :
+        WebChromeClient() {
 
-    override fun onProgressChanged(view: WebView?, newProgress: Int) {
-        if (newProgress >= 90) {
-            progressBar.visibility = View.GONE
-            webCardView.visibility = View.VISIBLE
+        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+            if (newProgress >= 90) {
+                progressBar.visibility = View.GONE
+                webCardView.visibility = View.VISIBLE
+            }
+
+            super.onProgressChanged(view, newProgress)
         }
-
-        super.onProgressChanged(view, newProgress)
     }
 }

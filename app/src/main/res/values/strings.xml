@@ -17,4 +17,5 @@
     <string name="removed_from_favs">Die Nachricht wurde aus deinen Favoriten entfernt.</string>
     <string name="source_title">Quellen</string>
     <string name="topic_title">Themen</string>
+    <string name="selected_filter_title">Filter </string>
 </resources>
