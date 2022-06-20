@@ -1,11 +1,13 @@
-package de.fhac.newsflash
+package de.fhac.newsflash.ui
 
 import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import de.fhac.newsflash.R
 import de.fhac.newsflash.databinding.BottomSheetBinding
+import de.fhac.newsflash.ui.activities.MainActivity
 
 /**
  * Callback for News Bottom sheet

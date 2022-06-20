@@ -1,22 +1,16 @@
-package de.fhac.newsflash
+package de.fhac.newsflash.ui.adapter
 
 import android.content.Context
-import android.os.Build
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.bumptech.glide.Glide
-import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.R
 import de.fhac.newsflash.data.models.Filter
-import de.fhac.newsflash.data.models.News
-import de.fhac.newsflash.data.stream.StreamSubscription
+import de.fhac.newsflash.ui.activities.MainActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
-import org.jsoup.safety.Safelist
 
 class FilterAdapter(
     private val mainActivity: MainActivity

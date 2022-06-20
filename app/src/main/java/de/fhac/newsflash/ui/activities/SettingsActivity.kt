@@ -1,10 +1,13 @@
-package de.fhac.newsflash
+package de.fhac.newsflash.ui.activities
 
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import de.fhac.newsflash.R
+import de.fhac.newsflash.ui.adapter.RSSFeedsAdapter
+import de.fhac.newsflash.ui.adapter.StringAdapterWithFilter
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.RSSSource
 import de.fhac.newsflash.databinding.ActivitySettingsBinding

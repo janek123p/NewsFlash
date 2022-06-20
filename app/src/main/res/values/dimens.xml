@@ -2,6 +2,6 @@
 <resources>
     <dimen name="shadowViewHeight">40dp</dimen>
     <dimen name="shadowMargin">10dp</dimen>
-    <dimen name="cornerRadiusSmall">20dp</dimen>
+    <dimen name="cornerRadiusSmall">15dp</dimen>
     <dimen name="cornerRadiusBig">30dp</dimen>
 </resources>

@@ -11,10 +11,11 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Gradient colors -->
+        <!-- theme specific colors -->
         <item name="gradientStartColor">@color/design_default_color_on_primary</item>
         <item name="gradientEndColor">@color/mid_gray</item>
         <item name="shadowColor">@color/black</item>
+        <item name="transparentEffectColor">@color/dark_transparent</item>
         <!-- Customize your theme here. -->
         <item name="android:windowLayoutInDisplayCutoutMode">
             shortEdges <!-- default, shortEdges, or never -->

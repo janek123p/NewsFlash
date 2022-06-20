@@ -1,4 +1,4 @@
-package de.fhac.newsflash
+package de.fhac.newsflash.ui.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -22,6 +22,10 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import de.fhac.newsflash.ui.adapter.FilterAdapter
+import de.fhac.newsflash.ui.NewsBottomSheetCallback
+import de.fhac.newsflash.ui.adapter.NewsListAdapter
+import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
@@ -86,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         reloadNewsData()
         super.onRestart()
     }
+
 
     /**
      * Add Callbacks for bottom navigation bar
@@ -252,10 +257,10 @@ class MainActivity : AppCompatActivity() {
             webContent.loadUrl(news.url)
 
             if (news.imageUrl != null) {
-                imgThumbnail.visibility = View.VISIBLE
+                cardViewThumbnail.visibility = View.VISIBLE
                 Glide.with(this@MainActivity).load(news.imageUrl).centerCrop().into(imgThumbnail)
             } else {
-                imgThumbnail.visibility = View.GONE
+                cardViewThumbnail.visibility = View.GONE
             }
 
             if (NewsController.getFavoritesStream().getLatest()?.contains(news) == true) {

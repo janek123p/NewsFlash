@@ -1,13 +1,15 @@
-package de.fhac.newsflash
+package de.fhac.newsflash.ui.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
+import de.fhac.newsflash.ui.activities.SettingsActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
