@@ -10,7 +10,8 @@ class News(
     val description: String,
     val url: String,
     val pubDate: Date,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    var source: ISource? = null
 ) : Parcelable{
 
 }

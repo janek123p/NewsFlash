@@ -92,7 +92,7 @@ object NewsController {
                     return
                 }
 
-                filtered.addAll(news)
+                filtered.addAll(news.map { news -> news.source = source; return@map news; })
             } catch (ex: Exception) {
                 errors.add(ex)
             }
