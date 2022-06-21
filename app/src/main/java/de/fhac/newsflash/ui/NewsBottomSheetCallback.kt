@@ -37,10 +37,6 @@ class NewsBottomSheetCallback(
             BottomSheetBehavior.STATE_DRAGGING -> binding.apply {
                 previewGroup.visibility = View.VISIBLE
                 webViewGroup.visibility = View.VISIBLE
-                when (lastBottomSheetState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> webViewGroup.alpha = 0f
-                    BottomSheetBehavior.STATE_EXPANDED -> previewGroup.alpha = 1f
-                }
             }
             BottomSheetBehavior.STATE_HIDDEN -> {
                 mainActivity.resetCurrentNews()
@@ -60,13 +56,13 @@ class NewsBottomSheetCallback(
                 previewGroup.alpha = 1f - slideOffset
                 if (slideOffset > 0.5) {
                     // Set corner radius and shadow size dependent on slideOffset
-                    var drawable = mainConstraintLayout.background as GradientDrawable
+                    val drawable = mainConstraintLayout.background as GradientDrawable
                     drawable.cornerRadius =
                         (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.cornerRadiusBig))
-                    binding.imgViewShadow.layoutParams.height =
+                    imgViewShadow.layoutParams.height =
                         (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.shadowViewHeight)).toInt()
                     setMarginTop(
-                        binding.mainConstraintLayout,
+                        mainConstraintLayout,
                         (2 * (1 - slideOffset) * mainActivity.resources.getDimension(R.dimen.shadowMargin)).toInt()
                     )
                 }

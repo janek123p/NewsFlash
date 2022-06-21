@@ -1,4 +1,4 @@
-package de.fhac.newsflash.news_view_groups
+package de.fhac.newsflash.ui.news_view_groups
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import com.bumptech.glide.Glide
 import de.fhac.newsflash.ui.activities.MainActivity
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.models.News
@@ -23,15 +22,20 @@ class SingleNewsViewGroup(private var data: News, mainActivity: MainActivity) :
 
         val convertView = inflater.inflate(R.layout.news_card_single, null)
 
-        convertView.setOnClickListener {
-            mainActivity.showDetailedNews(data)
-        }
-
         return convertView.apply {
+            setOnClickListener {
+                mainActivity.showDetailedNews(data)
+            }
+
             val imgThumbnail = findViewById<ImageView>(R.id.img_thumbnail)
             val imgCardView = findViewById<CardView>(R.id.img_card_view)
             if (data.imageUrl != null) {
-                Glide.with(context).load(data.imageUrl).into(imgThumbnail)
+                loadImageAsynchronouslyIntoImageView(
+                    data.imageUrl!!,
+                    imgThumbnail,
+                    imgCardView,
+                    mainActivity
+                )
                 imgCardView.visibility = View.VISIBLE
             } else {
                 imgCardView.visibility = View.GONE
@@ -51,7 +55,7 @@ class SingleNewsViewGroup(private var data: News, mainActivity: MainActivity) :
         }
     }
 
-    override fun getPubDate(): Date {
+    override fun getLatestPubDate(): Date {
         return data.pubDate
     }
 }

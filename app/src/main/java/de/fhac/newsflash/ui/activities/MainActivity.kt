@@ -84,11 +84,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Reload data if app is restarted
+     * Reload data if app is restarted and resume news subscriptions
      */
     override fun onRestart() {
         reloadNewsData()
+        newsListAdapter.resumeSubscriptions()
         super.onRestart()
+    }
+
+    /**
+     * Cancel subscriptions if app is stopped
+     */
+    override fun onStop() {
+        newsListAdapter.pauseSubscriptions()
+        super.onStop()
     }
 
 

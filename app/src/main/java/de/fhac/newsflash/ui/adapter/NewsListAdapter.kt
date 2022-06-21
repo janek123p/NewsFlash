@@ -8,7 +8,7 @@ import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.stream.StreamSubscription
 import de.fhac.newsflash.ui.activities.MainActivity
-import de.fhac.newsflash.news_view_groups.NewsViewGroup
+import de.fhac.newsflash.ui.news_view_groups.NewsViewGroup
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
@@ -34,15 +34,22 @@ class NewsListAdapter(
         }
     }
 
+    fun pauseSubscriptions(){
+        sub.pause()
+    }
+
+    fun resumeSubscriptions(){
+        sub.resume()
+    }
+
     private fun notify(newsList: List<News>?) {
         GlobalScope.launch {
             val data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
-
             viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
-
             mainActivity.runOnUiThread {
                 notifyDataSetChanged()
             }
+
         }
     }
 

@@ -99,6 +99,6 @@ object NewsController {
         }
 
         errorController.getSink().add(errors)
-        newsController.getSink().add(filtered)
+        newsController.getSink().add(filtered.distinctBy { news -> news.url })
     }
 }

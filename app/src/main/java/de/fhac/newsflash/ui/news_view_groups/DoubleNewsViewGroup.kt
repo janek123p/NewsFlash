@@ -1,4 +1,4 @@
-package de.fhac.newsflash.news_view_groups
+package de.fhac.newsflash.ui.news_view_groups
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -61,7 +61,7 @@ class DoubleNewsViewGroup(
         }
     }
 
-    override fun getPubDate(): Date {
-        return minOf(data1.pubDate, data2.pubDate)
+    override fun getLatestPubDate(): Date {
+        return maxOf(data1.pubDate, data2.pubDate)
     }
 }

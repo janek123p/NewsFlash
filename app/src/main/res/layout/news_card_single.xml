@@ -15,9 +15,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/img_card_view"
-            app:cardCornerRadius="@dimen/cornerRadiusSmall"
             android:layout_width="140dp"
             android:layout_height="0dp"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="@dimen/cornerRadiusSmall"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

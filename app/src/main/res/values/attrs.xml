@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="gradientStartColor" format="color" />
-    <attr name="gradientEndColor" format="color" />
-    <attr name="shadowColor" format="color"/>
-    <attr name="transparentEffectColor" format="color"/>
+    <declare-styleable name="ds">
+        <attr name="gradientStartColor" format="color" />
+        <attr name="gradientEndColor" format="color" />
+        <attr name="shadowColor" format="color" />
+        <attr name="transparentEffectColor" format="color" />
+    </declare-styleable>
 </resources>
