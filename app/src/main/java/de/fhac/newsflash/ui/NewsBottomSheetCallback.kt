@@ -11,6 +11,8 @@ import de.fhac.newsflash.ui.activities.MainActivity
 
 /**
  * Callback for News Bottom sheet
+ * @param binding Binding to the bottomSheet
+ * @param mainActivity MainActivity
  */
 class NewsBottomSheetCallback(
     private val binding: BottomSheetBinding,
@@ -76,6 +78,8 @@ class NewsBottomSheetCallback(
 
     /**
      * Sets top margin of a constraint layout
+     * @param layout layout to set margin of
+     * @param margin margin value
      */
     private fun setMarginTop(layout: ConstraintLayout, margin: Int) {
         var layoutParams = layout.layoutParams as FrameLayout.LayoutParams

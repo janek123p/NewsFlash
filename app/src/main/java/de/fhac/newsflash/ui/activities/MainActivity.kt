@@ -184,6 +184,7 @@ class MainActivity : AppCompatActivity() {
      * Add various callbacks for bottom sheet, BackPressedDispatcher and various buttons
      */
     private fun addCallbacks() {
+        // Add bottom sheet callbakc
         bottomSheetBehavior.addBottomSheetCallback(
             NewsBottomSheetCallback(
                 bottomSheetBinding,
@@ -191,12 +192,14 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
+        // Add callback to handle back presses
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 this@MainActivity.handleOnBackPressed()
             }
         })
 
+        // Add callbacks for bottom sheet buttons
         bottomSheetBinding.apply {
             btResizeNews.setOnClickListener { switchBottomSheetBehaviorState() }
             btShare.setOnClickListener { shareCurrentNews() }
@@ -205,6 +208,7 @@ class MainActivity : AppCompatActivity() {
             btRefresh.setOnClickListener { refreshCurrentNews() }
         }
 
+        // Add filter callback
         binding.filter.apply {
             filterDropdownButton.setOnClickListener {
                 if (filters.visibility == View.VISIBLE) {
@@ -368,6 +372,9 @@ class MainActivity : AppCompatActivity() {
         currentNews = null
     }
 
+    /**
+     * Class to implement WebChromeClient with specific onProgressChanged
+     */
     class ChromeClient(
         private val progressBar: ProgressBar,
         private val webCardView: CardView

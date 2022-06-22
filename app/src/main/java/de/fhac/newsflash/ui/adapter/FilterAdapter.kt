@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 
+
 class FilterAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {

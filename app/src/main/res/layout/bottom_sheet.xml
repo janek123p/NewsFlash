@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/shadowMargin"
-        android:background="@drawable/rect_rounded_top"
+        android:background="@drawable/rect_rounded_top_gradient"
         android:orientation="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

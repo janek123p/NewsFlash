@@ -21,30 +21,74 @@ import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 import java.util.*
 
+/**
+ * abstract class NewsViewGroup to define functionality of a NewsViewGroup
+ * NewsViewGroup represents a set of news. Depending on the type of NewsViewGroup
+ * either a single news, two news or any amount of news can be represented by
+ * the NewsViewGroup
+ */
 abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
 
-    abstract fun getView(): View
+    /**
+     * Function to get view for specific news element(s)
+     * @param view View to use, if null a new view should be inflated
+     * @return View showing the news item(s)
+     */
+    abstract fun getView(view: View? = null): View
+
+    /**
+     * Function to obtain the latest publishing date of all news handled by the NewsViewGroup
+     * @return latest publishing date
+     */
     abstract fun getLatestPubDate(): Date
+
+    /**
+     * Function to return NewsViewGroupType
+     * @return type
+     */
+    abstract fun getType(): TYPE
+
+    /**
+     * enum class to represent type of NewsViewGroup
+     */
+    enum class TYPE(private val typeAsInt: Int) {
+        SINGLE(0), DOUBLE(1), MULTIPLE(2);
+
+        fun getInt(): Int {
+            return typeAsInt
+        }
+    }
 
     companion object {
 
+        /**
+         * Function to create ViewGroups out of a list of news
+         *
+         * @param data list of news to be represented in the NewsViewGroups
+         * @param mainActivity MainActivity
+         */
         suspend fun createViewGroups(
             data: List<News>,
             mainActivity: MainActivity
         ): MutableList<NewsViewGroup> {
+            //async as this process may take some time especially with many news
             val result = GlobalScope.async {
                 val list = mutableListOf<NewsViewGroup>()
                 val indicesToDo = data.indices.toMutableList()
 
+                // Extract all groups (HorizontalScrollNewsViewGroups) and add to list
+                // of NewsViewGroups
                 list.addAll(extractGroups(data, indicesToDo, mainActivity))
 
                 var numDouble = 0
                 var numSingle = 0
 
                 while (indicesToDo.size > 0) {
+                    // calculate propability for choosing DoubleViewGroup
                     val probability =
                         if (numDouble + numSingle < 2) 0.3 else 0.6 * numSingle / (numDouble + numSingle)
                     if (indicesToDo.size >= 2 && Math.random() < probability) {
+                        // Add DoubleNewsViewGroup
                         list.add(
                             DoubleNewsViewGroup(
                                 data[indicesToDo.removeAt(0)],
@@ -54,6 +98,7 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                         )
                         ++numDouble
                     } else {
+                        // Add SingleNewsViewGroup
                         list.add(SingleNewsViewGroup(data[indicesToDo.removeAt(0)], mainActivity))
                         ++numSingle
                     }
@@ -66,6 +111,15 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
             return result.await()
         }
 
+        /**
+         * Function to extract groups from list of news. Groups of at least minGroupSize news
+         * from one source that occur in a temporal proximity will be extracted as a group
+         *
+         * @param data list of news
+         * @param indicesToDo List of indices that still must be mapped to a NewsViewGroup
+         * @param mainActivity MainActivity
+         * @param minGroupSize Minimal size a group of news must have to be accounted
+         */
         private fun extractGroups(
             data: List<News>,
             indicesToDo: MutableList<Int>,
@@ -75,22 +129,34 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
             val viewGroups = mutableListOf<HorizontalScrollNewsViewGroup>()
             val indicesToRemove = mutableListOf<Int>()
 
+            // Group data by source
             val sourceMap = data.groupBy { news -> news.source }
+
+            // For every source look for temporal proximities
             for (source in sourceMap.keys) if (source != null) {
+                // Sort news by publishing date
                 val newsBySource = sourceMap[source]!!.sortedByDescending { news -> news.pubDate }
 
                 var i = 1
                 var sumDistance = 0
                 var indexOfNews = data.indexOf(newsBySource[0])
                 indicesToRemove += indexOfNews
+                // Loop over all news
                 while (i < newsBySource.size) {
+                    // Get index of news in data (corresponds to publishing date)
                     val newIndex = data.indexOf(newsBySource[i])
+                    // If temporal proximity is given (difference of indices in data is less or
+                    // equal to 3) and summed distance of the current group of news is less than 8
+                    // add this news to the group
                     if (newIndex - indexOfNews <= 3 && sumDistance < 8) {
                         indicesToRemove += newIndex
                         sumDistance += (newIndex - indexOfNews - 1)
                         indexOfNews = newIndex
                         ++i
                     }
+                    // if the above stated conditions are not fulfilled or last news item is reached
+                    // close group if it has at least minGroupSize items and eventually look for
+                    // next group
                     if (!(newIndex - indexOfNews <= 3 && sumDistance < 8) || i == newsBySource.size) {
                         if (indicesToRemove.size > minGroupSize) {
                             viewGroups += HorizontalScrollNewsViewGroup(
@@ -113,10 +179,18 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
             return viewGroups
         }
 
+        /**
+         * Function to remove all HTML tags from title
+         * @param title Title to remove html tags from
+         */
         fun cleanHTMLForTitle(title: String): String {
             return Jsoup.clean(title, Safelist.none())
         }
 
+        /**
+         * Function to remove some HTML tags (see Safelist.basic())
+         * @param content Content to remove HTML tags from
+         */
         fun cleanHTMLForContent(content: String): Spanned {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //Show description with possible html tags, removes everything but text format
                 Html.fromHtml(
@@ -128,12 +202,20 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
             }
         }
 
+        /**
+         * Function to load image from url into ImageView asynchronously
+         * @param url URL of the image
+         * @param iv ImageView to load image into
+         * @param surroundingView View to set visibility to false if loading of the image failed
+         * @param mainActivity MainActivity
+         */
         fun loadImageAsynchronouslyIntoImageView(
             url: String,
             iv: ImageView,
-            cv: CardView,
+            surroundingView: View,
             mainActivity: MainActivity
         ) {
+            // Submit loading URL
             Glide.with(mainActivity).load(url)
                 .addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -142,8 +224,9 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
+                        // If loading failed: set visibility of surrounding view to GONE
                         mainActivity.runOnUiThread {
-                            cv.visibility = View.GONE
+                            surroundingView.visibility = View.GONE
                         }
                         return true
                     }
@@ -155,17 +238,9 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // to run this on ui thread leads to massive performance problems
-                        // while scrolling through news list. As most of the time this works
-                        // even when not called from ui thread we deliberately refrain
-                        // from doing so. If a problem still occurs, we will run the code on
-                        // UI thread
-                        try {
-                            iv.setImageDrawable(resource)
-                        } catch (exc: Exception) {
-                            mainActivity.runOnUiThread {
-                                iv.setImageDrawable(resource)
-                            }
+                        // If loading URL has worked load image resource into ImageView
+                        mainActivity.runOnUiThread {
+                            Glide.with(mainActivity).load(resource).into(iv)
                         }
                         return true
                     }
