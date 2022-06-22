@@ -80,11 +80,14 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun initRSSAutoCompletion() {
         GlobalScope.launch {
-            val adapter = StringAdapterWithFilter(
-                this@SettingsActivity,
-                readRSSList()
-            )
-            runOnUiThread { binding.txtRssLink.setAdapter(adapter) }
+            val rssList = readRSSList()
+
+            runOnUiThread {
+                val adapter = StringAdapterWithFilter(
+                    this@SettingsActivity, rssList
+                )
+                binding.txtRssLink.setAdapter(adapter)
+            }
         }
     }
 
