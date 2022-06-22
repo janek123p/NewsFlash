@@ -26,20 +26,39 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Inflate binding
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Create RSSFeedsAdapter
         rssFeedListAdapter = RSSFeedsAdapter(this@SettingsActivity)
 
+        // Add callbacks and set adapter fo ListView
         binding.apply {
             btBack.setOnClickListener { onBackPressed() }
             listRssFeeds.adapter = rssFeedListAdapter
             txtRssLink.doAfterTextChanged { onRSSURLChanged() }
+            binding.btAddRssFeed.setOnClickListener { onAddFeedClickedListener() }
         }
 
+        // Initialize autocompletion
         initRSSAutoCompletion()
-        addOnAddFeedClickedListener()
+    }
+
+    /**
+     * Resume subscription if Activity is restarted
+     */
+    override fun onRestart() {
+        rssFeedListAdapter.resumeSubscription()
+        super.onRestart()
+    }
+
+    /**
+     * Pause subscription if Activity is stopped
+     */
+    override fun onStop() {
+        rssFeedListAdapter.pauseSubscription()
+        super.onStop()
     }
 
     /**
@@ -56,17 +75,25 @@ class SettingsActivity : AppCompatActivity() {
         return result.await()
     }
 
+    /**
+     * Initialize RSS autocompletion by setting corresponding adapter
+     */
     private fun initRSSAutoCompletion() {
         GlobalScope.launch {
-            val adapter = StringAdapterWithFilter(
-                this@SettingsActivity,
-                R.layout.dropdown_item,
-                readRSSList()
-            )
-            runOnUiThread { binding.txtRssLink.setAdapter(adapter) }
+            val rssList = readRSSList()
+
+            runOnUiThread {
+                val adapter = StringAdapterWithFilter(
+                    this@SettingsActivity, rssList
+                )
+                binding.txtRssLink.setAdapter(adapter)
+            }
         }
     }
 
+    /**
+     * Function to determine action when types RSS URL changed
+     */
     private fun onRSSURLChanged() {
         val url = binding.txtRssLink.text.toString()
         GlobalScope.launch {
@@ -87,33 +114,38 @@ class SettingsActivity : AppCompatActivity() {
         binding.wrapperTxtLink.isErrorEnabled = false
     }
 
-    private fun addOnAddFeedClickedListener() {
-        binding.btAddRssFeed.setOnClickListener {
-            binding.loadingIndicator.visibility = View.VISIBLE
+    /**
+     * Function that determines behavior when addFeed button is clicked
+     */
+    private fun onAddFeedClickedListener() {
+        binding.loadingIndicator.visibility = View.VISIBLE
 
-            GlobalScope.launch {
-                try {
-                    SourceController.registerSource(binding.txtRssLink.text.toString())
-                    runOnUiThread {
-                        clearRSSLinkError()
-                        binding.txtRssLink.setText("")
-                        binding.loadingIndicator.visibility = View.GONE
-                        currentFocus?.let { view ->
-                            val imm =
-                                getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-                            imm?.hideSoftInputFromWindow(view.windowToken, 0)
-                        }
+        GlobalScope.launch {
+            try {
+                SourceController.registerSource(binding.txtRssLink.text.toString())
+                runOnUiThread {
+                    // Clear error, remove loading indicator and clear url EditText
+                    clearRSSLinkError()
+                    binding.txtRssLink.setText("")
+                    binding.loadingIndicator.visibility = View.GONE
+                    // Eventually hide soft keyboard
+                    currentFocus?.let { view ->
+                        val imm =
+                            getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                        imm?.hideSoftInputFromWindow(view.windowToken, 0)
                     }
-                } catch (ex: Exception) {
-                    runOnUiThread {
-                        setRSSLinkError(
-                            ex.message ?: getString(R.string.error_while_adding_rss_feed)
-                        )
-                        binding.loadingIndicator.visibility = View.GONE
-                    }
+                }
+            } catch (ex: Exception) {
+                // If registration of RSS source has failed
+                runOnUiThread {
+                    setRSSLinkError(
+                        ex.message ?: getString(R.string.error_while_adding_rss_feed)
+                    )
+                    binding.loadingIndicator.visibility = View.GONE
                 }
             }
         }
+
 
     }
 }

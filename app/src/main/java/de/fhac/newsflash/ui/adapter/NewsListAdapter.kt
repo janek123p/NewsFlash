@@ -2,8 +2,8 @@ package de.fhac.newsflash.ui.adapter
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
 import android.widget.BaseAdapter
-import androidx.recyclerview.widget.RecyclerView
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
@@ -14,6 +14,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 
+/**
+ * Adapter to handle news
+ * @param mainActivity MainActivity
+ */
 class NewsListAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {
@@ -30,9 +34,13 @@ class NewsListAdapter(
 
     var filterFavorites: Boolean = false
 
+    /**
+     * Launch task to reload data
+     */
     fun launchReloadData(
         onFinished: Runnable? = null,
         filter: Filter? = null,
+        filterFavourites: Boolean? = false
     ) {
         GlobalScope.launch {
             NewsController.refresh(filter)
@@ -49,28 +57,49 @@ class NewsListAdapter(
         }
     }
 
+    /**
+     * Pause news subscription
+     */
     fun pauseSubscriptions() {
         favSub.pause()
         newsSub.pause()
     }
 
+    /**
+     * Resume news subscription
+     */
     fun resumeSubscriptions() {
         newsSub.resume()
         favSub.resume()
     }
 
+    /**
+     * Function to be called, when new news data arrives
+     * @param newsList new news data
+     */
     private fun notifyNews(newsList: List<News>?) {
         GlobalScope.launch {
             newsData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
         }
     }
 
+    /**
+     * Function to be called, when new favorite news data arrives
+     * @param newsList new news data
+     */
     private fun notifyFavorites(newsList: List<News>?) {
         GlobalScope.launch {
             favData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
         }
     }
 
+    override fun getViewTypeCount(): Int {
+        return NewsViewGroup.TYPE.values().size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return viewGroups!![position].getType().getInt()
+    }
     override fun getCount(): Int {
         return viewGroups?.count() ?: 0
     }
@@ -84,6 +113,14 @@ class NewsListAdapter(
     }
 
     override fun getView(position: Int, view: View?, p2: ViewGroup?): View? {
-        return viewGroups!![position].getView()
+        return if (view?.tag == getItemViewType(position)) {
+            // No new layout inflation needed ==> pass view to getView-method
+            viewGroups!![position].getView(view)
+        } else {
+            // new layout inflation needed
+            val retView = viewGroups!![position].getView(null)
+            retView.tag = getItemViewType(position)
+            retView
+        }
     }
 }

@@ -32,6 +32,20 @@ class RSSFeedsAdapter(private val settingsActivity: SettingsActivity) : BaseAdap
     }
 
     /**
+     * Pause subscription to the SourceStream
+     */
+    fun pauseSubscription(){
+        subscription.pause()
+    }
+
+    /**
+     * Resume subscription to the SourceStream
+     */
+    fun resumeSubscription(){
+        subscription.resume()
+    }
+
+    /**
      * return count of rss feeds
      */
     override fun getCount(): Int {
