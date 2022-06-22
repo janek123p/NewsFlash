@@ -2,7 +2,8 @@ package de.fhac.newsflash.ui.adapter
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseAdapter
+import androidx.recyclerview.widget.RecyclerView
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
@@ -17,39 +18,56 @@ class NewsListAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {
 
-    private var sub: StreamSubscription<List<News>> =
-        NewsController.getNewsStream().listen(this::notify, true)
+    private var newsSub: StreamSubscription<List<News>> =
+        NewsController.getNewsStream().listen(this::notifyNews, true)
+    private var newsData: List<News> = listOf()
+
+    private var favSub: StreamSubscription<List<News>> =
+        NewsController.getFavoritesStream().listen(this::notifyFavorites, true)
+    private var favData: List<News> = listOf()
 
     private var viewGroups: List<NewsViewGroup>? = null
 
+    var filterFavorites: Boolean = false
 
     fun launchReloadData(
         onFinished: Runnable? = null,
         filter: Filter? = null,
-        filterFavourites: Boolean? = false
     ) {
         GlobalScope.launch {
-            NewsController.refresh()
-            onFinished?.run()
-        }
-    }
-
-    fun pauseSubscriptions(){
-        sub.pause()
-    }
-
-    fun resumeSubscriptions(){
-        sub.resume()
-    }
-
-    private fun notify(newsList: List<News>?) {
-        GlobalScope.launch {
-            val data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+            NewsController.refresh(filter)
+            val data: List<News> = if (filterFavorites) {
+                favData
+            } else {
+                newsData
+            }
             viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
             mainActivity.runOnUiThread {
                 notifyDataSetChanged()
+                onFinished?.run()
             }
+        }
+    }
 
+    fun pauseSubscriptions() {
+        favSub.pause()
+        newsSub.pause()
+    }
+
+    fun resumeSubscriptions() {
+        newsSub.resume()
+        favSub.resume()
+    }
+
+    private fun notifyNews(newsList: List<News>?) {
+        GlobalScope.launch {
+            newsData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+        }
+    }
+
+    private fun notifyFavorites(newsList: List<News>?) {
+        GlobalScope.launch {
+            favData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
         }
     }
 

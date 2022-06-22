@@ -4,8 +4,6 @@ import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
-import kotlinx.coroutines.runBlocking
-import java.lang.Exception
 
 object NewsController {
 
@@ -64,7 +62,7 @@ object NewsController {
     /**
      * Refreshes the newsfeed. Takes the specified filter into account.
      */
-    suspend fun refresh(filter: Filter? = null, filterFavorites: Boolean? = false) {
+    suspend fun refresh(filter: Filter? = null) {
         val filtered = mutableListOf<News>()
         var errors = mutableListOf<Exception>()
 

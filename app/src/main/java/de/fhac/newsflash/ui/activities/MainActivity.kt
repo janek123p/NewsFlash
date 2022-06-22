@@ -32,11 +32,12 @@ import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
 class MainActivity : AppCompatActivity() {
-    private var filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
@@ -109,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.favorites_nav -> {
-                        filterFavourites = true
+                        newsListAdapter.filterFavorites = true
                         reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
                 when (it.itemId) {
                     R.id.news_nav -> {
-                        filterFavourites = false
+                        newsListAdapter.filterFavorites = false
                         reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
@@ -138,7 +139,10 @@ class MainActivity : AppCompatActivity() {
     private fun initNewsData() {
         newsListAdapter = NewsListAdapter(this)
         binding.newsList.adapter = newsListAdapter
-        reloadNewsData()
+        GlobalScope.launch {
+            NewsController.refresh()
+            reloadNewsData()
+        }
     }
 
     /**
@@ -147,10 +151,8 @@ class MainActivity : AppCompatActivity() {
     private fun reloadNewsData() {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         newsListAdapter.launchReloadData(onFinished = {
-            runOnUiThread {
-                binding.loadingIndicatorTop.visibility = View.GONE
-            }
-        }, currentFilter, filterFavourites)
+            binding.loadingIndicatorTop.visibility = View.GONE
+        }, currentFilter)
     }
 
     /**
@@ -159,6 +161,7 @@ class MainActivity : AppCompatActivity() {
     private fun initFilters() {
         filterAdapter = FilterAdapter(this)
         binding.filter.sourceFilterContainer.adapter = filterAdapter
+        filterAdapter.loadFilters()
     }
 
     /**
