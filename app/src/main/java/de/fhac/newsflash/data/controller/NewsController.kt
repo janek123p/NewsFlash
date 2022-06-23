@@ -262,7 +262,7 @@ object NewsController {
         return filtered;
     }
 
-    private fun getRegEx(s: String) = Regex(".*[^A-Za-z0-9]${Regex.escape(s)}[^A-Za-z0-9].*", RegexOption.IGNORE_CASE)
+    private fun getRegEx(s: String) = Regex("[^A-Za-z0-9]${Regex.escape(s)}[^A-Za-z0-9]", RegexOption.IGNORE_CASE)
 
 
     /**
