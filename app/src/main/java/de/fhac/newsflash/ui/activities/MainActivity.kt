@@ -7,8 +7,6 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Html
 import android.view.View
 import android.webkit.WebChromeClient
@@ -22,11 +20,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.cardview.widget.CardView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import de.fhac.newsflash.ui.adapter.FilterAdapter
-import de.fhac.newsflash.ui.NewsBottomSheetCallback
-import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
@@ -34,7 +30,10 @@ import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
+import de.fhac.newsflash.ui.NewsBottomSheetCallback
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
+import de.fhac.newsflash.ui.adapter.FilterAdapter
+import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
@@ -58,6 +57,10 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
+        val pullToRefresh: SwipeRefreshLayout = findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener {
+            reloadNewsData()
+        }
         AppDatabase.initDatabase(applicationContext)
         initFilters()
         initNewsData()

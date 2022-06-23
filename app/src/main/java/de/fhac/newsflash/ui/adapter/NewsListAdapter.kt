@@ -3,6 +3,8 @@ package de.fhac.newsflash.ui.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.NewsEvent
 import de.fhac.newsflash.data.models.Filter
@@ -61,14 +63,16 @@ class NewsListAdapter(
         GlobalScope.launch {
             if(event is NewsEvent.NewsLoadingEvent){
                 mainActivity.runOnUiThread {
-                    mainActivity.binding.loadingIndicatorTop.visibility = View.VISIBLE
+                    val pullToRefresh: SwipeRefreshLayout = mainActivity.findViewById(R.id.pullToRefresh);
+                    pullToRefresh.isRefreshing = true
                 }
             }else if(event is NewsEvent.NewsLoadedEvent){
                 val data = event.news?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
                 viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
                 mainActivity.runOnUiThread {
                     notifyDataSetChanged()
-                    mainActivity.binding.loadingIndicatorTop.visibility = View.GONE
+                    val pullToRefresh: SwipeRefreshLayout = mainActivity.findViewById(R.id.pullToRefresh);
+                    pullToRefresh.isRefreshing = false
                 }
             }
 

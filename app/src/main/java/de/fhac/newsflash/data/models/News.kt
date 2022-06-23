@@ -6,6 +6,9 @@ import de.fhac.newsflash.data.repositories.models.DatabaseSource
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
+/**
+ * Model representing a news.
+ */
 @Parcelize
 class News(
     val id: Long? = null,

@@ -9,6 +9,9 @@ import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+/**
+ * BLoC of the source component
+ */
 object SourceController {
 
     private var sources = mutableListOf<ISource>()
@@ -16,11 +19,14 @@ object SourceController {
     private val sourceController = StreamController<MutableList<ISource>>();
 
     init {
+
         GlobalScope.launch {
+            //Check async if sources are available in the database and load them.
             var feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
-                ?.map { source -> RSSSource(source.uid!!, source.name, source.url) }
+                ?.map { source -> source.toISource() }
                 ?.toMutableList<ISource>()
 
+            //If not sources cached create default sources and save them in db
             if (feeds == null || feeds.isEmpty()) {
                 AppDatabase.getDatabase()?.sourceRepository()?.insertAll(
                     DatabaseSource(
@@ -32,15 +38,18 @@ object SourceController {
                         url = "https://rss.dw.com/xml/rss-de-all"
                     )
                 )
+
+                //Load sources with ids
+                feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
+                    ?.map { source -> source.toISource() }
+                    ?.toMutableList<ISource>()
             }
 
-            feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
-                ?.map { source -> source.toISource() }
-                ?.toMutableList<ISource>()
-
-            if (feeds != null && feeds.isNotEmpty())
+            //Cache loaded feeds in sources
+            if (feeds != null && feeds.isNotEmpty()) //Should never be false.
                 sources = feeds;
 
+            //Notify subscribers of sources
             sourceController.getSink().add(sources);
         }
     }
@@ -51,7 +60,7 @@ object SourceController {
     fun getSourceStream() = sourceController.getStream();
 
     /**
-     * Delete a source
+     * Delete a source from cache and database
      */
     fun deleteSource(source: ISource, onError: ((java.lang.Exception) -> Unit)? = null) {
         if (sources.remove(source) != null) {
@@ -71,6 +80,8 @@ object SourceController {
 
     /**
      * Register a new source by its url. Checks if its a valid rss feed and parses the feeds title.
+     *
+     * Saves the source to database.
      */
     suspend fun registerSource(url: String) {
         try {
