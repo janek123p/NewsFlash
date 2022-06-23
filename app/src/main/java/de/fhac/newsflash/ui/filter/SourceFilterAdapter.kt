@@ -22,7 +22,7 @@ class SourceFilterAdapter(
     }
 
     override fun getItemCount(): Int {
-        return sources!!.count()
+        return sources?.count() ?: 0
     }
 
     override fun onBindViewHolder(holder: SourceViewHolder, position: Int) {

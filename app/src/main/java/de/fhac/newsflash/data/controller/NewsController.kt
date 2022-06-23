@@ -6,7 +6,6 @@ import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.*
-import org.intellij.lang.annotations.RegExp
 import java.net.InetAddress
 import java.util.*
 
@@ -118,14 +117,17 @@ object NewsController {
     /**
      * Adds a news to the users favorites and database
      */
-    fun addFavorite(news: News): Boolean {
+    suspend fun addFavorite(news: News): Boolean {
         if (favorites.contains(news)) return false;
 
         if (favorites.add(news)) {
             try {
-                AppDatabase.getDatabase()?.newsRepository()?.insertOrUpdate(
-                    news.toDatabase(true)
-                )
+                withContext(Dispatchers.Default) {
+                    AppDatabase.getDatabase()?.newsRepository()?.insertOrUpdate(
+                        news.toDatabase(true)
+                    )
+                };
+
                 favoritesController.getSink().add(favorites);
                 return true
             } catch (e: Exception) {
@@ -145,19 +147,22 @@ object NewsController {
     /**
      * Removes a news from the users favorites and database
      */
-    fun removeFavorite(news: News): Boolean {
+    suspend fun removeFavorite(news: News): Boolean {
         if (favorites.contains(news)) {
             var last = favorites[favorites.indexOf(news)];
             if (favorites.remove(last)) {
                 try {
-                    AppDatabase.getDatabase()?.newsRepository()?.delete(last.toDatabase(true))
+                    withContext(Dispatchers.Default) {
+                        AppDatabase.getDatabase()?.newsRepository()?.delete(last.toDatabase(true))
+                    }
+
                     favoritesController.getSink().add(favorites);
                     return true;
                 } catch (e: Exception) {
                     errorController.getSink().add(
                         (errorController.getStream().getLatest() ?: mutableListOf()).plus(
                             Exception(
-                                "Favorit konnten aus der Datenbank gelöscht werden",
+                                "Favorit konnte nicht aus der Datenbank gelöscht werden",
                                 e
                             )
                         )
@@ -197,9 +202,8 @@ object NewsController {
 
         if (SourceController.getSourceStream()
                 .getLatest() == null
-        ) { //If no sources no news can be loaded.
-            newsController.getSink().add(NewsEvent.NewsLoadedEvent(null))
-            return
+        ) { //Init source controller if not happened
+            SourceController.init();
         };
 
         for (source in SourceController.getSourceStream().getLatest()!!) { //Load news from sources

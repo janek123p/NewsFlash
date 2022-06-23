@@ -6,8 +6,7 @@ import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.data.repositories.models.DatabaseSource
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * BLoC of the source component
@@ -18,9 +17,8 @@ object SourceController {
 
     private val sourceController = StreamController<MutableList<ISource>>();
 
-    init {
-
-//        GlobalScope.launch {
+    suspend fun init() {
+        withContext(Dispatchers.Default) {
             //Check async if sources are available in the database and load them.
             var feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
                 ?.map { source -> source.toISource() }
@@ -51,7 +49,7 @@ object SourceController {
 
             //Notify subscribers of sources
             sourceController.getSink().add(sources);
-//        }
+        }
     }
 
     /**
