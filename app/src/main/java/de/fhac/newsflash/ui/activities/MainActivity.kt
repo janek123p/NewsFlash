@@ -41,7 +41,7 @@ import org.jsoup.safety.Safelist
 class MainActivity : AppCompatActivity() {
     private var filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
@@ -149,12 +149,7 @@ class MainActivity : AppCompatActivity() {
      * Reload News
      */
     private fun reloadNewsData() {
-        binding.loadingIndicatorTop.visibility = View.VISIBLE
-        newsListAdapter.launchReloadData(onFinished = {
-            runOnUiThread {
-                binding.loadingIndicatorTop.visibility = View.GONE
-            }
-        }, currentFilter, filterFavourites)
+        newsListAdapter.launchReloadData()
     }
 
     /**
