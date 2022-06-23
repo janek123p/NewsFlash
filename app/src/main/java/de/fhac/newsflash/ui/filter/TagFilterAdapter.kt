@@ -36,14 +36,16 @@ class TagFilterAdapter(
 
     private fun selectFilterItem(tag: Tag): () -> Unit {
         return {
-            filterHandler.selectFilter(tag)
-            removeFilterItem(tag)
+            if (tag in tags) {
+                filterHandler.selectFilter(tag)
+                removeFilterItem(tag)
+            }
         }
     }
 
     private fun removeFilterItem(tag: Tag) {
         val itemIndex = tags.indexOf(tag)
-        tags!!.removeAt(itemIndex)
+        tags.removeAt(itemIndex)
         notifyItemRemoved(itemIndex)
     }
 }

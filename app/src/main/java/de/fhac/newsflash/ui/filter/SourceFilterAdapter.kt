@@ -36,8 +36,10 @@ class SourceFilterAdapter(
 
     private fun selectFilterItem(source: ISource): () -> Unit {
         return {
-            filterHandler.selectFilter(source)
-            removeFilterItem(source)
+            if (sources == null || source in sources!!) {
+                filterHandler.selectFilter(source)
+                removeFilterItem(source)
+            }
         }
     }
 
