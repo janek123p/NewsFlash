@@ -5,15 +5,17 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import de.fhac.newsflash.data.repositories.models.DatabaseNews
 import de.fhac.newsflash.data.repositories.models.DatabaseSource
 
 @Database(
-    entities = [DatabaseSource::class],
-    version = 1,
-    autoMigrations = []
+    entities = [DatabaseSource::class, DatabaseNews::class],
+    version = 2,
+    autoMigrations = [ AutoMigration(from = 1, to = 2) ]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sourceRepository(): ISourceRepository
+    abstract fun newsRepository(): INewsRepository
 
 
     /**

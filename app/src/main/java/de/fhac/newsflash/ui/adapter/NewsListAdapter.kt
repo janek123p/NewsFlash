@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.data.controller.NewsEvent
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.stream.StreamSubscription
@@ -21,7 +22,7 @@ class NewsListAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {
 
-    private var sub: StreamSubscription<List<News>> =
+    private var sub: StreamSubscription<NewsEvent> =
         NewsController.getNewsStream().listen(this::notify, true)
 
     private var viewGroups: List<NewsViewGroup>? = null
@@ -31,8 +32,6 @@ class NewsListAdapter(
      */
     fun launchReloadData(
         onFinished: Runnable? = null,
-        filter: Filter? = null,
-        filterFavourites: Boolean? = false
     ) {
         GlobalScope.launch {
             NewsController.refresh()
@@ -58,13 +57,21 @@ class NewsListAdapter(
      * Function to be called, when new news data arrives
      * @param newsList new news data
      */
-    private fun notify(newsList: List<News>?) {
+    private fun notify(event: NewsEvent?) {
         GlobalScope.launch {
-            val data = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
-            viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
-            mainActivity.runOnUiThread {
-                notifyDataSetChanged()
+            if(event is NewsEvent.NewsLoadingEvent){
+                mainActivity.runOnUiThread {
+                    mainActivity.binding.loadingIndicatorTop.visibility = View.VISIBLE
+                }
+            }else if(event is NewsEvent.NewsLoadedEvent){
+                val data = event.news?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+                viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
+                mainActivity.runOnUiThread {
+                    notifyDataSetChanged()
+                    mainActivity.binding.loadingIndicatorTop.visibility = View.GONE
+                }
             }
+
         }
     }
 

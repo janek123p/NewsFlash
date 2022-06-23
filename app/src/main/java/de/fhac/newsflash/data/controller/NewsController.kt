@@ -2,6 +2,9 @@ package de.fhac.newsflash.data.controller
 
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.data.repositories.AppDatabase
+import de.fhac.newsflash.data.repositories.models.DatabaseNews
+import de.fhac.newsflash.data.repositories.models.DatabaseSource
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.runBlocking
@@ -10,8 +13,10 @@ import java.lang.Exception
 object NewsController {
 
     private val favorites: MutableList<News> = mutableListOf()
+    private val news: MutableList<News> = mutableListOf()
+    private var filter: Filter? = null;
 
-    private val newsController: StreamController<List<News>> = StreamController()
+    private val newsController: StreamController<NewsEvent> = StreamController()
     private val favoritesController: StreamController<List<News>> = StreamController()
     private val errorController: StreamController<List<Exception>> = StreamController()
 
@@ -21,6 +26,19 @@ object NewsController {
     init {
 
     }
+
+    fun setFilter(filter: Filter) {
+        this.filter = filter
+
+        favoritesController.getSink().add(filtered(favorites));
+        newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)))
+    }
+
+    fun resetFilter() {
+        filter = null;
+    }
+
+    fun getFilter() = filter;
 
     fun getErrorStream() = errorController.getStream()
 
@@ -41,11 +59,18 @@ object NewsController {
      * Adds a news to the users favorites
      */
     fun addFavorite(news: News): Boolean {
-        if (newsController.getStream().getLatest()?.contains(news) != true) return false;
+        if (!favorites.contains(news)) return false;
 
         if (favorites.add(news)) {
-            favoritesController.getSink().add(favorites)
-            return true
+            try {
+                AppDatabase.getDatabase()?.newsRepository()?.insertOrUpdate(
+                    news.toDatabase()
+                )
+                favoritesController.getSink().add(favorites);
+                return true
+            } catch (e: Exception) {
+                errorController.getSink().add(mutableListOf(e))
+            }
         }
         return false
     }
@@ -54,9 +79,17 @@ object NewsController {
      * Removes a news from the users favorites
      */
     fun removeFavorite(news: News): Boolean {
-        if (favorites.remove(news)) {
-            favoritesController.getSink().add(favorites);
-            return true;
+        if (favorites.contains(news)) {
+            var last = favorites[favorites.indexOf(news)];
+            if(favorites.remove(last)) {
+                try {
+                    AppDatabase.getDatabase()?.newsRepository()?.delete(last.toDatabase())
+                    favoritesController.getSink().add(favorites);
+                    return true;
+                } catch (e: Exception) {
+                    errorController.getSink().add(mutableListOf(e))
+                }
+            }
         }
         return false;
     };
@@ -64,8 +97,9 @@ object NewsController {
     /**
      * Refreshes the newsfeed. Takes the specified filter into account.
      */
-    suspend fun refresh(filter: Filter? = null, filterFavorites: Boolean? = false) {
-        val filtered = mutableListOf<News>()
+    suspend fun refresh() {
+        newsController.getSink().add(NewsEvent.NewsLoadingEvent())
+        val allNews = mutableListOf<News>()
         var errors = mutableListOf<Exception>()
 
         if (SourceController.getSourceStream().getLatest() == null) {
@@ -74,31 +108,36 @@ object NewsController {
         };
 
         for (source in SourceController.getSourceStream().getLatest()!!) {
-            if (filter != null && filter.sources.contains(source)) continue
-
             try {
                 val news = RssService.parseNews(source.getUrl());
 
-                if (filter != null && filter.tags.isNotEmpty()) {
-                    filtered.addAll(news.filter { news ->
-                        filter.tags.any { tag ->
-                            tag.keywords.any { s ->
-                                news.title.contains(
-                                    s
-                                ) || news.description.contains(s)
-                            }
-                        }
-                    })
-                    return
-                }
-
-                filtered.addAll(news.map { news -> news.source = source; return@map news; })
+                allNews.addAll(news.map { news -> news.source = source; return@map news; })
             } catch (ex: Exception) {
                 errors.add(ex)
             }
         }
 
+        news.clear();
+        news.addAll(allNews.distinctBy { news -> news.url });
+
         errorController.getSink().add(errors)
-        newsController.getSink().add(filtered.distinctBy { news -> news.url })
+        newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)))
+    }
+
+    private fun filtered(toFilter: List<News>): List<News> {
+        if (filter == null || (filter!!.tags.isEmpty() && filter!!.sources.isEmpty())) return toFilter;
+
+        return toFilter.filter { news ->
+            filter?.sources?.any { iSource ->
+                iSource.getUrl().equals(news.source?.getUrl(), true)
+            } ?: true &&
+                    (filter?.tags?.any { tag ->
+                        tag.keywords.any { s ->
+                            news.title.contains(
+                                s
+                            ) || news.description.contains(s)
+                        }
+                    } ?: true)
+        }
     }
 }
