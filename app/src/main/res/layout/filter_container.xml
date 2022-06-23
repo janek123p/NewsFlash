@@ -1,49 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:background="@drawable/rect_rounded_full_effect"
     android:orientation="vertical"
-    app:cardCornerRadius="@dimen/cornerRadiusSmall"
+    android:padding="5dp"
     app:layout_constraintBottom_toTopOf="@+id/news_list"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/title_bar">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/selected_filter_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:padding="5dp"
+        android:text="@string/selected_filter_title"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_filter_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/selected_filter_container" />
 
-        <TextView
-            android:id="@+id/selected_filter_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/selected_filter_title"
-            android:padding="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/selected_filter_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/filter_dropdown_button"
+        app:layout_constraintEnd_toStartOf="@id/filter_dropdown_button"
+        app:layout_constraintStart_toEndOf="@+id/selected_filter_title"
+        app:layout_constraintTop_toTopOf="@+id/filter_dropdown_button" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/selected_filter_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toStartOf="@id/filter_dropdown_button"
-            app:layout_constraintStart_toEndOf="@+id/selected_filter_title"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/filter_dropdown_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@android:string/untitled"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down_24" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/filter_dropdown_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@android:string/untitled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down_24" />
 
     <LinearLayout
         android:id="@+id/filters"
@@ -51,13 +47,15 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:orientation="vertical"
-        android:visibility="gone">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selected_filter_title">
 
         <TextView
             android:id="@+id/tag_filter_title"
-            android:padding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:text="@string/topic_title" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -68,9 +66,9 @@
 
         <TextView
             android:id="@+id/source_filter_title"
-            android:padding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:text="@string/source_title" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -80,4 +78,4 @@
             android:orientation="horizontal" />
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

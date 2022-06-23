@@ -119,7 +119,7 @@ object NewsController {
      * Adds a news to the users favorites and database
      */
     fun addFavorite(news: News): Boolean {
-        if (!favorites.contains(news)) return false;
+        if (favorites.contains(news)) return false;
 
         if (favorites.add(news)) {
             try {
