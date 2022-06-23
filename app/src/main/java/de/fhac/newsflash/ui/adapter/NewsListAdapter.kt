@@ -81,6 +81,7 @@ class NewsListAdapter(
                     val pullToRefresh: SwipeRefreshLayout =
                         mainActivity.findViewById(R.id.pullToRefresh);
                     pullToRefresh.isRefreshing = false
+                    pullToRefresh.isEnabled = true
                 }
             }
         }
@@ -110,7 +111,7 @@ class NewsListAdapter(
                 notifyDataSetChanged()
                 val pullToRefresh: SwipeRefreshLayout =
                     mainActivity.findViewById(R.id.pullToRefresh);
-                pullToRefresh.isRefreshing = false
+                pullToRefresh.isEnabled = false
             }
         }
     }
