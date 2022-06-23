@@ -20,7 +20,7 @@ object SourceController {
 
     init {
 
-        GlobalScope.launch {
+//        GlobalScope.launch {
             //Check async if sources are available in the database and load them.
             var feeds = AppDatabase.getDatabase()?.sourceRepository()?.getAll()
                 ?.map { source -> source.toISource() }
@@ -51,7 +51,7 @@ object SourceController {
 
             //Notify subscribers of sources
             sourceController.getSink().add(sources);
-        }
+//        }
     }
 
     /**
