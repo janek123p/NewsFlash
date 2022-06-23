@@ -7,6 +7,8 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Html
 import android.view.View
 import android.webkit.WebChromeClient
@@ -34,6 +36,7 @@ import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private var currentNews: News? = null
     private lateinit var filterAdapter: FilterAdapter
     private var currentFilter: Filter? = null
+
 
     /**
      * Initialize UI and logic of MainActivity
@@ -139,10 +143,7 @@ class MainActivity : AppCompatActivity() {
     private fun initNewsData() {
         newsListAdapter = NewsListAdapter(this)
         binding.newsList.adapter = newsListAdapter
-        GlobalScope.launch {
-            NewsController.refresh()
-            reloadNewsData()
-        }
+        reloadNewsData()
     }
 
     /**
@@ -151,8 +152,10 @@ class MainActivity : AppCompatActivity() {
     private fun reloadNewsData() {
         binding.loadingIndicatorTop.visibility = View.VISIBLE
         newsListAdapter.launchReloadData(onFinished = {
-            binding.loadingIndicatorTop.visibility = View.GONE
-        }, currentFilter)
+            runOnUiThread {
+                binding.loadingIndicatorTop.visibility = View.GONE
+            }
+        }, currentFilter, filterFavourites)
     }
 
     /**
@@ -161,7 +164,6 @@ class MainActivity : AppCompatActivity() {
     private fun initFilters() {
         filterAdapter = FilterAdapter(this)
         binding.filter.sourceFilterContainer.adapter = filterAdapter
-        filterAdapter.loadFilters()
     }
 
     /**
@@ -187,7 +189,7 @@ class MainActivity : AppCompatActivity() {
      * Add various callbacks for bottom sheet, BackPressedDispatcher and various buttons
      */
     private fun addCallbacks() {
-        // Add bottom sheet callbakc
+        // Add bottom sheet callback
         bottomSheetBehavior.addBottomSheetCallback(
             NewsBottomSheetCallback(
                 bottomSheetBinding,
@@ -205,15 +207,15 @@ class MainActivity : AppCompatActivity() {
         // Add callbacks for bottom sheet buttons
         bottomSheetBinding.apply {
             btResizeNews.setOnClickListener { switchBottomSheetBehaviorState() }
-            btShare.setOnClickListener { shareCurrentNews() }
-            btShowInBrowser.setOnClickListener { showCurrentNewsInBrowser() }
-            btSave.setOnClickListener { saveOrRemoveCurrentNewsToFavorites() }
-            btRefresh.setOnClickListener { refreshCurrentNews() }
+            btShare.setOnClickListenerWithAnimation { shareCurrentNews() }
+            btShowInBrowser.setOnClickListenerWithAnimation { showCurrentNewsInBrowser() }
+            btSave.setOnClickListenerWithAnimation { saveOrRemoveCurrentNewsToFavorites() }
+            btRefresh.setOnClickListenerWithAnimation { refreshCurrentNews() }
         }
 
         // Add filter callback
         binding.filter.apply {
-            filterDropdownButton.setOnClickListener {
+            filterDropdownButton.setOnClickListenerWithAnimation {
                 if (filters.visibility == View.VISIBLE) {
                     filters.visibility = View.GONE
                 } else if (filters.visibility == View.GONE) {
@@ -378,7 +380,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Class to implement WebChromeClient with specific onProgressChanged
      */
-    class ChromeClient(
+    private class ChromeClient(
         private val progressBar: ProgressBar,
         private val webCardView: CardView
     ) :

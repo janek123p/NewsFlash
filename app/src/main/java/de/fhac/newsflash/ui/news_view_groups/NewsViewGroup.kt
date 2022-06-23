@@ -6,20 +6,20 @@ import android.text.Html
 import android.text.Spanned
 import android.view.View
 import android.widget.ImageView
-import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import de.fhac.newsflash.R
-import de.fhac.newsflash.ui.activities.MainActivity
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.ui.activities.MainActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.jsoup.Jsoup
+import com.bumptech.glide.request.target.Target
 import org.jsoup.safety.Safelist
 import java.util.*
+
 
 /**
  * abstract class NewsViewGroup to define functionality of a NewsViewGroup
@@ -246,5 +246,7 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                     }
                 }).submit()
         }
+
+
     }
 }

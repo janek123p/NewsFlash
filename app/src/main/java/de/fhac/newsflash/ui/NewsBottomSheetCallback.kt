@@ -42,6 +42,7 @@ class NewsBottomSheetCallback(
             }
             BottomSheetBehavior.STATE_HIDDEN -> {
                 mainActivity.resetCurrentNews()
+                mainActivity.setBackgroundBlurred(0f)
             }
         }
         lastBottomSheetState = newState
@@ -95,7 +96,7 @@ class NewsBottomSheetCallback(
         binding.apply {
             previewGroup.visibility = View.VISIBLE
             webViewGroup.visibility = View.GONE
-            btRefresh.visibility = View.GONE
+            btRefresh.visibility = View.INVISIBLE
         }
     }
 

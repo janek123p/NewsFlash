@@ -9,6 +9,7 @@ import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
+import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import de.fhac.newsflash.ui.activities.SettingsActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -34,14 +35,14 @@ class RSSFeedsAdapter(private val settingsActivity: SettingsActivity) : BaseAdap
     /**
      * Pause subscription to the SourceStream
      */
-    fun pauseSubscription(){
+    fun pauseSubscription() {
         subscription.pause()
     }
 
     /**
      * Resume subscription to the SourceStream
      */
-    fun resumeSubscription(){
+    fun resumeSubscription() {
         subscription.resume()
     }
 
@@ -80,7 +81,7 @@ class RSSFeedsAdapter(private val settingsActivity: SettingsActivity) : BaseAdap
         convertView.findViewById<TextView>(R.id.txt_name).text = feed.getName()
         convertView.findViewById<TextView>(R.id.txt_link).text = feed.getUrl().toString()
 
-        convertView.findViewById<Button>(R.id.bt_remove).setOnClickListener {
+        convertView.findViewById<Button>(R.id.bt_remove).setOnClickListenerWithAnimation {
             SourceController.deleteSource(feed) { exc ->
                 Toast.makeText(
                     settingsActivity,

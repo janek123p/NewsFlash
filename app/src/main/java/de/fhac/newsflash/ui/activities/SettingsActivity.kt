@@ -11,10 +11,13 @@ import de.fhac.newsflash.ui.adapter.StringAdapterWithFilter
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.RSSSource
 import de.fhac.newsflash.databinding.ActivitySettingsBinding
+import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.streams.toList
+
+
 
 /**
  * Activity to handle app settings, especially managing user selected RSS feeds
@@ -35,10 +38,10 @@ class SettingsActivity : AppCompatActivity() {
 
         // Add callbacks and set adapter fo ListView
         binding.apply {
-            btBack.setOnClickListener { onBackPressed() }
+            btBack.setOnClickListenerWithAnimation { onBackPressed() }
             listRssFeeds.adapter = rssFeedListAdapter
             txtRssLink.doAfterTextChanged { onRSSURLChanged() }
-            binding.btAddRssFeed.setOnClickListener { onAddFeedClickedListener() }
+            binding.btAddRssFeed.setOnClickListenerWithAnimation { onAddFeedClickedListener() }
         }
 
         // Initialize autocompletion

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import de.fhac.newsflash.ui.activities.MainActivity
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import java.util.*
 
 /**
@@ -82,7 +83,7 @@ class HorizontalNewsAdapter(
         // Bind news to corresponding View
         fun setNews(news: News) {
             // Add onClickListener
-            view.setOnClickListener {
+            view.setOnClickListenerWithAnimation {
                 mainActivity.showDetailedNews(news)
             }
 

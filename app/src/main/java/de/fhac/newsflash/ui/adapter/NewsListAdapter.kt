@@ -80,6 +80,9 @@ class NewsListAdapter(
     private fun notifyNews(newsList: List<News>?) {
         GlobalScope.launch {
             newsData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+            mainActivity.runOnUiThread {
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -90,6 +93,9 @@ class NewsListAdapter(
     private fun notifyFavorites(newsList: List<News>?) {
         GlobalScope.launch {
             favData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+            mainActivity.runOnUiThread {
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -112,7 +118,9 @@ class NewsListAdapter(
         return pos.toLong()
     }
 
-    override fun getView(position: Int, view: View?, p2: ViewGroup?): View? {
+    override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View? {
+        println(position)
+
         return if (view?.tag == getItemViewType(position)) {
             // No new layout inflation needed ==> pass view to getView-method
             viewGroups!![position].getView(view)

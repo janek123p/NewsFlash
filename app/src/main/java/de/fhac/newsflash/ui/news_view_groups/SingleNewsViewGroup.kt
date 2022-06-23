@@ -10,6 +10,7 @@ import androidx.core.view.allViews
 import de.fhac.newsflash.ui.activities.MainActivity
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import java.util.*
 
 
@@ -31,7 +32,7 @@ class SingleNewsViewGroup(
 
         return convertView.apply {
             // Add onClickListener to open detailed news view (bottomSheet)
-            setOnClickListener {
+            setOnClickListenerWithAnimation {
                 mainActivity.showDetailedNews(data)
             }
 
