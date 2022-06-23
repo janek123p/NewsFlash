@@ -16,11 +16,18 @@ interface INewsRepository {
     @Query("SELECT * FROM news WHERE favorite=1")
     fun getAllFavorites() : List<DatabaseNewsWithSource>
 
+    @Transaction
+    @Query("SELECT * FROM news WHERE favorite=0")
+    fun getAllNonFavorites() : List<DatabaseNewsWithSource>
+
     @Query("DELETE FROM news WHERE favorite=0")
     fun deleteAllNonFavorites();
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insertAll(vararg news: DatabaseNews): List<Long>;
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAllIgnore(news: List<DatabaseNews>): List<Long>;
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(news: DatabaseNews): Long;

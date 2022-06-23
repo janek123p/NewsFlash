@@ -3,12 +3,11 @@ package de.fhac.newsflash.data.controller
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
-import de.fhac.newsflash.data.repositories.models.DatabaseNews
-import de.fhac.newsflash.data.repositories.models.DatabaseSource
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
-import kotlinx.coroutines.runBlocking
-import java.lang.Exception
+import kotlinx.coroutines.*
+import java.net.InetAddress
+import java.util.*
 
 object NewsController {
 
@@ -20,11 +19,40 @@ object NewsController {
     private val favoritesController: StreamController<List<News>> = StreamController()
     private val errorController: StreamController<List<Exception>> = StreamController()
 
-    /**
-     * Load Database
-     */
-    init {
 
+    fun loadCached(){
+        GlobalScope.launch {
+            newsController.getSink().add(NewsEvent.NewsLoadingEvent());
+
+            favorites.addAll(
+                AppDatabase.getDatabase()?.newsRepository()?.getAllFavorites()
+                    ?.map { databaseNewsWithSource -> databaseNewsWithSource.toNews() }
+                    ?.toMutableList()
+                    ?: mutableListOf()
+            )
+
+            favoritesController.getSink().add(filtered(favorites));
+
+            news.addAll(
+                AppDatabase.getDatabase()?.newsRepository()?.getAllNonFavorites()
+                    ?.map { databaseNewsWithSource -> databaseNewsWithSource.toNews() }
+                    ?.toMutableList()
+                    ?: mutableListOf()
+            )
+
+            newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)));
+        }
+    }
+
+    fun cacheNews(){
+        try{
+            var newsRepo =AppDatabase.getDatabase()?.newsRepository()
+
+            newsRepo?.deleteAllNonFavorites();
+            newsRepo?.insertAllIgnore(news.map { news ->  news.toDatabase(false)}.toList())
+        }catch(e: Exception){
+
+        }
     }
 
     fun setFilter(filter: Filter) {
@@ -81,7 +109,7 @@ object NewsController {
     fun removeFavorite(news: News): Boolean {
         if (favorites.contains(news)) {
             var last = favorites[favorites.indexOf(news)];
-            if(favorites.remove(last)) {
+            if (favorites.remove(last)) {
                 try {
                     AppDatabase.getDatabase()?.newsRepository()?.delete(last.toDatabase(true))
                     favoritesController.getSink().add(favorites);
@@ -99,11 +127,23 @@ object NewsController {
      */
     suspend fun refresh() {
         newsController.getSink().add(NewsEvent.NewsLoadingEvent())
+
+        if(!isInternetAvailable()){
+            if(news.isEmpty()){
+                withContext(Dispatchers.Default) {
+                    loadCached()
+                }
+            }
+            errorController.getSink().add(listOf(java.lang.Exception("Keine Internetverbindung vorhanden")))
+            newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)))
+            return;
+        }
+
         val allNews = mutableListOf<News>()
         var errors = mutableListOf<Exception>()
 
         if (SourceController.getSourceStream().getLatest() == null) {
-            newsController.getSink().add(null)
+            newsController.getSink().add(NewsEvent.NewsLoadedEvent(null))
             return
         };
 
@@ -122,6 +162,10 @@ object NewsController {
 
         errorController.getSink().add(errors)
         newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)))
+
+        GlobalScope.launch {
+            cacheNews();
+        }
     }
 
     private fun filtered(toFilter: List<News>): List<News> {
@@ -138,6 +182,19 @@ object NewsController {
                             ) || news.description.contains(s)
                         }
                     } ?: true)
+        }
+    }
+
+    /**
+     * Copied from https://stackoverflow.com/questions/9570237/android-check-internet-connection
+     */
+    open fun isInternetAvailable(): Boolean {
+        return try {
+            val ipAddr: InetAddress = InetAddress.getByName("google.com")
+            //You can replace it with your name
+            !ipAddr.equals("")
+        } catch (e: java.lang.Exception) {
+            false
         }
     }
 }
