@@ -37,6 +37,8 @@ import de.fhac.newsflash.ui.NewsBottomSheetCallback
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import de.fhac.newsflash.ui.filter.FilterHandler
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 import java.util.*
@@ -402,12 +404,18 @@ class MainActivity : AppCompatActivity() {
     private fun saveOrRemoveCurrentNewsToFavorites() {
         currentNews?.let { news ->
             if (NewsController.getFavoritesStream().getLatest()?.contains(news) == true) {
-                NewsController.removeFavorite(news)
+                GlobalScope.launch {
+                    NewsController.removeFavorite(news)
+                }
+
                 Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT)
                     .show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             } else {
-                NewsController.addFavorite(news)
+                GlobalScope.launch {
+                    NewsController.addFavorite(news)
+                }
+
                 Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_SHORT).show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             }
