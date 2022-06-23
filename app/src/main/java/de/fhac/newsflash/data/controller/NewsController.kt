@@ -74,6 +74,7 @@ object NewsController {
      */
     fun setFilter(filter: Filter) {
         GlobalScope.launch {
+            newsController.getSink().add(NewsEvent.NewsLoadingEvent());
             NewsController.filter = filter
 
             favoritesController.getSink().add(filtered(favorites));
@@ -118,7 +119,7 @@ object NewsController {
      * Adds a news to the users favorites and database
      */
     fun addFavorite(news: News): Boolean {
-        if (!favorites.contains(news)) return false;
+        if (favorites.contains(news)) return false;
 
         if (favorites.add(news)) {
             try {
@@ -235,7 +236,7 @@ object NewsController {
     private fun filtered(toFilter: List<News>): List<News> {
         if (filter == null || (filter!!.tags.isEmpty() && filter!!.sources.isEmpty())) return toFilter;
 
-        var filtered = toFilter;
+        var filtered = toFilter.toList();
 
         //If filter by sources filter by sources
         //Union of sources

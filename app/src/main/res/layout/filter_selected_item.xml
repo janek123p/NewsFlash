@@ -4,23 +4,26 @@
     android:id="@+id/filter_item"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="2dp"
     android:background="@drawable/rect_rounded_full_effect"
-    android:clickable="true"
-    android:padding="4dp">
+    android:clickable="true">
 
     <TextView
         android:id="@+id/selected_filter_item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="filter_placeholder"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/remove_selected_filter_item"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/remove_selected_filter_item"
+
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:paddingEnd="3dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/selected_filter_item_text"
         app:layout_constraintTop_toTopOf="parent"
