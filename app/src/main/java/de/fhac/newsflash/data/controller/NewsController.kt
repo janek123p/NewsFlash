@@ -22,15 +22,13 @@ object NewsController {
     private val favoritesController: StreamController<List<News>> = StreamController()
     private val errorController: StreamController<List<Exception>> = StreamController()
 
-    init {
+    fun init() {
         //Load cached favorites async
         GlobalScope.launch {
-            favorites.addAll(
-                AppDatabase.getDatabase()?.newsRepository()?.getAllFavorites()
-                    ?.map { databaseNewsWithSource -> databaseNewsWithSource.toNews() }
-                    ?.toMutableList()
-                    ?: mutableListOf()
-            )
+            var fav = AppDatabase.getDatabase()?.newsRepository()?.getAllFavorites()
+            var mapped = fav?.map { databaseNewsWithSource -> databaseNewsWithSource.toNews() }
+
+            favorites.addAll(mapped?.toMutableList() ?: mutableListOf())
 
             favoritesController.getSink().add(filtered(favorites));
         }
@@ -128,9 +126,14 @@ object NewsController {
                     )
                 };
 
+                withContext(Dispatchers.Default){
+                    var favs = AppDatabase.getDatabase()?.newsRepository()?.getAllFavorites();
+                    println(favs?.size ?: "KEINE DATEN!")
+                }
                 favoritesController.getSink().add(favorites);
                 return true
             } catch (e: Exception) {
+                favorites.remove(news)
                 errorController.getSink().add(
                     (errorController.getStream().getLatest() ?: mutableListOf()).plus(
                         Exception(
@@ -159,6 +162,7 @@ object NewsController {
                     favoritesController.getSink().add(favorites);
                     return true;
                 } catch (e: Exception) {
+                    favorites.add(news)
                     errorController.getSink().add(
                         (errorController.getStream().getLatest() ?: mutableListOf()).plus(
                             Exception(

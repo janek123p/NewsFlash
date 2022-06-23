@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         AppDatabase.initDatabase(applicationContext)
+        NewsController.init()
 
         initFilters()
         initNewsData()
