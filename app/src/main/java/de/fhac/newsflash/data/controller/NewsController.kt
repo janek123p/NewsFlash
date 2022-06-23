@@ -6,6 +6,7 @@ import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.*
+import org.intellij.lang.annotations.RegExp
 import java.net.InetAddress
 import java.util.*
 
@@ -85,6 +86,9 @@ object NewsController {
      */
     fun resetFilter() {
         filter = null;
+
+        favoritesController.getSink().add(filtered(favorites));
+        newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)))
     }
 
     /**
@@ -124,7 +128,14 @@ object NewsController {
                 favoritesController.getSink().add(favorites);
                 return true
             } catch (e: Exception) {
-                errorController.getSink().add(mutableListOf(e))
+                errorController.getSink().add(
+                    (errorController.getStream().getLatest() ?: mutableListOf()).plus(
+                        Exception(
+                            "Favorit konnten nicht in der Datenbank gespeichert werden",
+                            e
+                        )
+                    )
+                )
             }
         }
         return false
@@ -142,7 +153,14 @@ object NewsController {
                     favoritesController.getSink().add(favorites);
                     return true;
                 } catch (e: Exception) {
-                    errorController.getSink().add(mutableListOf(e))
+                    errorController.getSink().add(
+                        (errorController.getStream().getLatest() ?: mutableListOf()).plus(
+                            Exception(
+                                "Favorit konnten aus der Datenbank gelöscht werden",
+                                e
+                            )
+                        )
+                    )
                 }
             }
         }
@@ -185,16 +203,18 @@ object NewsController {
 
         for (source in SourceController.getSourceStream().getLatest()!!) { //Load news from sources
             try {
-                if (source.getUrl().contains("cnn", true))
-                    throw Exception("Hallo");
-
                 val news = RssService.parseNews(source.getUrl());
 
                 allNews.addAll(news.map { news ->
                     news.source = source; return@map news;
                 }) //Add to allNews with source injected
             } catch (ex: Exception) {
-                errors.add(ex)
+                errors.add(
+                    java.lang.Exception(
+                        "Feed von ${source.getName()} konnte nicht geladen werden.",
+                        ex
+                    )
+                )
             }
         }
 
@@ -217,6 +237,8 @@ object NewsController {
 
         var filtered = toFilter;
 
+        //If filter by sources filter by sources
+        //Union of sources
         if (filter!!.sources.isNotEmpty()) {
             filtered = filtered.filter { news ->
                 filter!!.sources.any { iSource ->
@@ -225,13 +247,13 @@ object NewsController {
             }
         }
 
+        //If filter by tags. Filter descriptions and title by keyword of tags.
+        //Intersection of tags
         if (filter!!.tags.isNotEmpty()) {
             filtered = filtered.filter { news ->
-                (filter!!.tags.any { tag ->
+                (filter!!.tags.all { tag ->
                     tag.keywords.any { s ->
-                        news.title.contains(
-                            s
-                        ) || news.description.contains(s)
+                        news.title.contains(getRegEx(s)) || news.description.contains(getRegEx(s))
                     }
                 })
             }
@@ -239,6 +261,9 @@ object NewsController {
 
         return filtered;
     }
+
+    private fun getRegEx(s: String) = Regex(".*[^A-Za-z0-9]${Regex.escape(s)}[^A-Za-z0-9].*", RegexOption.IGNORE_CASE)
+
 
     /**
      * Checks if a sufficient internet connection is available.
