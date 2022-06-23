@@ -64,7 +64,7 @@ object NewsController {
         if (favorites.add(news)) {
             try {
                 AppDatabase.getDatabase()?.newsRepository()?.insertOrUpdate(
-                    news.toDatabase()
+                    news.toDatabase(true)
                 )
                 favoritesController.getSink().add(favorites);
                 return true
@@ -83,7 +83,7 @@ object NewsController {
             var last = favorites[favorites.indexOf(news)];
             if(favorites.remove(last)) {
                 try {
-                    AppDatabase.getDatabase()?.newsRepository()?.delete(last.toDatabase())
+                    AppDatabase.getDatabase()?.newsRepository()?.delete(last.toDatabase(true))
                     favoritesController.getSink().add(favorites);
                     return true;
                 } catch (e: Exception) {

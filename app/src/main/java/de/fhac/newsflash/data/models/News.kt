@@ -24,7 +24,7 @@ class News(
         return url.equals(other.url, ignoreCase = true);
     }
 
-    fun toDatabase() : DatabaseNews {
+    fun toDatabase(favorite: Boolean = false) : DatabaseNews {
         return  DatabaseNews(
             id,
             title,
@@ -32,7 +32,7 @@ class News(
             url,
             pubDate,
             imageUrl,
-            true,
+            favorite,
             source?.id
         )
     }
