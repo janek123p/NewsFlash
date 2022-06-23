@@ -31,9 +31,8 @@ class SourceFilterAdapter(
 
     fun addFilterItem(source: ISource) {
         this.sources!!.add(source)
-        notifyItemInserted(sources!!.count())
+        notifyItemInserted(sources!!.count() - 1)
     }
-
 
     private fun selectFilterItem(source: ISource): () -> Unit {
         return {
@@ -44,10 +43,7 @@ class SourceFilterAdapter(
 
     private fun removeFilterItem(source: ISource) {
         val itemIndex = sources!!.indexOf(source)
-        filterHandler.removeFilter(source)
-        println(sources)
-        sources!!.remove(source)
-        println(sources)
+        sources!!.removeAt(itemIndex)
         notifyItemRemoved(itemIndex)
     }
 }
