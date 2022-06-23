@@ -82,10 +82,10 @@ object SourceController {
      * Saves the source to database.
      */
     suspend fun registerSource(url: String) {
-        try {
-            if (sources.any { source -> source.getUrl().equals(url, ignoreCase = false) })
-                throw Exception("Feed ist bereits vorhanden!");
+        if (sources.any { source -> source.getUrl().equals(url, ignoreCase = false) })
+            throw Exception("Feed ist bereits vorhanden!");
 
+        try {
             val name = RssService.parseMeta(url);
 
             var id: Long? = AppDatabase.getDatabase()?.sourceRepository()
@@ -96,7 +96,7 @@ object SourceController {
 
             sourceController.getSink().add(sources);
         } catch (ex: Exception) {
-            throw Exception(ex.message ?: "Ungültiger RSS Feed")
+            throw Exception("Ungültiger RSS Feed")
         }
     }
 }
