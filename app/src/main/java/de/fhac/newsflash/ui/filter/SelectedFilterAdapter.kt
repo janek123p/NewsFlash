@@ -59,6 +59,7 @@ class SelectedFilterAdapter(
             filterHandler.removeFilter(source)
             this.filter.sources.remove(source)
             notifyItemRemoved(itemIndex)
+            NewsController.setFilter(filter)
         }
     }
 
@@ -68,6 +69,7 @@ class SelectedFilterAdapter(
             filterHandler.removeFilter(tag)
             this.filter.tags.remove(tag)
             notifyItemRemoved(itemIndex + filter.sources.count())
+            NewsController.setFilter(filter)
         }
     }
 }

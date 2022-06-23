@@ -5,11 +5,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/filter_item"
+    android:padding="2dp"
     android:clickable="true">
     <TextView
         android:id="@+id/filter_item_text"
-        android:background="@drawable/rect_rounded_full_gray"
-        android:padding="4dp"
+        android:background="@drawable/rect_rounded_full_effect"
+        android:padding="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="filter_placeholder" />
