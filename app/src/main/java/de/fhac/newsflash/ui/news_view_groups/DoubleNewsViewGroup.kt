@@ -8,6 +8,7 @@ import android.widget.TextView
 import de.fhac.newsflash.ui.activities.MainActivity
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.models.News
+import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import java.util.*
 
 /**
@@ -30,9 +31,8 @@ class DoubleNewsViewGroup(
 
         val convertView = view ?: inflater.inflate(R.layout.news_card_double, null)
 
-
         return convertView.apply {
-            // Set Tistle
+            // Set Title
             findViewById<TextView>(R.id.news_title).text =
                 cleanHTMLForTitle(data1.title) //Remove possible HTML tags
             findViewById<TextView>(R.id.news_title_2).text =
@@ -43,7 +43,7 @@ class DoubleNewsViewGroup(
             findViewById<TextView>(R.id.news_content_2).text =
                 cleanHTMLForContent(data2.description)
 
-            // Set source if not null, else set visivility of TextView to GONE
+            // Set source if not null, else set visibility of TextView to GONE
             val txtSource1 = findViewById<TextView>(R.id.news_source)
             val txtSource2 = findViewById<TextView>(R.id.news_source_2)
             if (data1.source != null) {
@@ -58,12 +58,12 @@ class DoubleNewsViewGroup(
             }
 
             // Add OnClickListener for both news element to show news in detailed view
-            findViewById<LinearLayout>(R.id.lin_layout_news).setOnClickListener {
+            findViewById<LinearLayout>(R.id.lin_layout_news).setOnClickListenerWithAnimation {
                 mainActivity.showDetailedNews(
                     data1
                 )
             }
-            findViewById<LinearLayout>(R.id.lin_layout_news_2).setOnClickListener {
+            findViewById<LinearLayout>(R.id.lin_layout_news_2).setOnClickListenerWithAnimation {
                 mainActivity.showDetailedNews(
                     data2
                 )

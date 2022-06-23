@@ -16,7 +16,7 @@
         android:textSize="22sp"
         app:layout_constraintStart_toEndOf="@+id/bt_back"
         app:layout_constraintTop_toTopOf="@+id/bt_back"
-        tools:viewBindingIgnore="true"/>
+        tools:viewBindingIgnore="true" />
 
     <Button
         android:id="@+id/bt_back"
@@ -61,6 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:completionThreshold="2"
+            android:hint="@string/rss_feed_link"
             android:popupBackground="@color/design_default_color_on_primary" />
 
     </com.google.android.material.textfield.TextInputLayout>

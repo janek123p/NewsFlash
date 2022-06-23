@@ -3,15 +3,12 @@ package de.fhac.newsflash.ui.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.stream.StreamSubscription
 import de.fhac.newsflash.ui.activities.MainActivity
-import de.fhac.newsflash.ui.news_view_groups.DoubleNewsViewGroup
 import de.fhac.newsflash.ui.news_view_groups.NewsViewGroup
-import de.fhac.newsflash.ui.news_view_groups.SingleNewsViewGroup
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
@@ -28,7 +25,6 @@ class NewsListAdapter(
         NewsController.getNewsStream().listen(this::notify, true)
 
     private var viewGroups: List<NewsViewGroup>? = null
-
 
     /**
      * Launch task to reload data
@@ -93,7 +89,9 @@ class NewsListAdapter(
         return pos.toLong()
     }
 
-    override fun getView(position: Int, view: View?, p2: ViewGroup?): View? {
+    override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View? {
+        println(position)
+
         return if (view?.tag == getItemViewType(position)) {
             // No new layout inflation needed ==> pass view to getView-method
             viewGroups!![position].getView(view)
