@@ -1,6 +1,7 @@
 package de.fhac.newsflash.ui.activities
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -17,6 +18,7 @@ import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.cardview.widget.CardView
@@ -28,16 +30,16 @@ import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
+import de.fhac.newsflash.data.stream.StreamSubscription
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
 import de.fhac.newsflash.ui.NewsBottomSheetCallback
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import de.fhac.newsflash.ui.filter.FilterHandler
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
+
 
 class MainActivity : AppCompatActivity() {
     private var filterFavourites: Boolean = false
@@ -48,7 +50,19 @@ class MainActivity : AppCompatActivity() {
     private var currentNews: News? = null
     private lateinit var filterHandler: FilterHandler
     private var currentFilter: Filter? = null
+    private var latestErrors: List<java.lang.Exception>? = null;
 
+    private val subscription: StreamSubscription<List<java.lang.Exception>> =
+        NewsController.getErrorStream().listen(this::showErrorDialog, false);
+
+
+    private fun showErrorDialog(errors: List<java.lang.Exception>?) {
+        latestErrors = errors;
+        runOnUiThread {
+            binding.titleBar.errorNav.visibility =
+                if (errors == null || errors.isEmpty()) View.GONE else View.VISIBLE
+        }
+    }
 
     /**
      * Initialize UI and logic of MainActivity
@@ -138,6 +152,21 @@ class MainActivity : AppCompatActivity() {
         binding.titleBar.settingsNav.setOnClickListener {
             val intent = Intent(this@MainActivity, SettingsActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.titleBar.errorNav.setOnClickListener {
+            if (latestErrors == null || latestErrors!!.isEmpty()) return@setOnClickListener;
+
+            val builder = AlertDialog.Builder(this);
+            builder.setTitle("${if (latestErrors!!.size > 1) "Mehrere" else "Ein"} Fehler aufgetreten")
+            builder.setMessage(latestErrors!!.joinToString { exception -> "${exception.message}${System.lineSeparator()}" })
+            builder.setCancelable(true);
+
+            builder.setPositiveButton(
+                "Verstanden",
+                DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+
+            builder.create().show();
         }
     }
 

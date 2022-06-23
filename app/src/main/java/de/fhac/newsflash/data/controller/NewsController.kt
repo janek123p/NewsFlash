@@ -185,6 +185,9 @@ object NewsController {
 
         for (source in SourceController.getSourceStream().getLatest()!!) { //Load news from sources
             try {
+                if(source.getUrl().contains("cnn", true))
+                    throw Exception("Hallo");
+
                 val news = RssService.parseNews(source.getUrl());
 
                 allNews.addAll(news.map { news ->
@@ -231,7 +234,7 @@ object NewsController {
      *
      * @author https://stackoverflow.com/questions/9570237/android-check-internet-connection
      */
-    open fun isInternetAvailable(): Boolean {
+    private fun isInternetAvailable(): Boolean {
         return try {
             val ipAddr: InetAddress = InetAddress.getByName("google.com")
             //You can replace it with your name
