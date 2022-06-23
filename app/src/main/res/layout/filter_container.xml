@@ -20,8 +20,10 @@
             android:id="@+id/selected_filter_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/selected_filter_title"
             android:padding="5dp"
+            android:text="@string/selected_filter_title"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -55,10 +57,12 @@
 
         <TextView
             android:id="@+id/tag_filter_title"
-            android:padding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/topic_title" />
+            android:padding="5dp"
+            android:text="@string/topic_title"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textSize="14sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tag_filter_container"
@@ -68,10 +72,12 @@
 
         <TextView
             android:id="@+id/source_filter_title"
-            android:padding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/source_title" />
+            android:padding="5dp"
+            android:text="@string/source_title"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textSize="14sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/source_filter_container"

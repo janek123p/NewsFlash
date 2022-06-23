@@ -31,7 +31,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title_bar"/>
+                app:layout_constraintTop_toBottomOf="@id/title_bar"
+                android:layout_marginHorizontal="5dp"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -48,6 +50,7 @@
                 android:layout_height="match_parent"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="8dp"
+                android:nestedScrollingEnabled="true"
                 android:padding="5dp" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
