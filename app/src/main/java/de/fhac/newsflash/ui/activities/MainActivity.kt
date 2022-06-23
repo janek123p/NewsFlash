@@ -66,8 +66,8 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
-
         AppDatabase.initDatabase(applicationContext)
+
         initFilters()
         initNewsData()
         initBottomSheet()
@@ -284,7 +284,7 @@ class MainActivity : AppCompatActivity() {
         valueInRange = if (value > 1f) 1f else valueInRange
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            binding.mainRelativLayout.setRenderEffect(
+            binding.mainRelativeLayout.setRenderEffect(
                 if (value < .1) null else RenderEffect.createBlurEffect(
                     valueInRange * 10f,
                     valueInRange * 10f,

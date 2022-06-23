@@ -20,7 +20,6 @@
         <item name="android:windowBackground">@color/white</item>
         <item name="android:colorBackground">@color/white</item>
         <item name="android:windowLayoutInDisplayCutoutMode">
-
             shortEdges <!-- default, shortEdges, or never -->
         </item>
     </style>

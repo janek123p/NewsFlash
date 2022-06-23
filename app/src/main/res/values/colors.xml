@@ -9,10 +9,11 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="black_A0">#90000000</color>
+    <color name="almost_black">#0C0C0C</color>
     <color name="background_dark">#FF252525</color>
     <color name="mid_gray">#636363</color>
     <color name="ic_launcher_background">#FF9E9C9C</color>
     <color name="gray_transparent_10">#0A777777</color>
-    <color name="light_transparent">#20FFFFFF</color>
+    <color name="light_transparent">#30FFFFFF</color>
     <color name="dark_transparent">#08000000</color>
 </resources>
