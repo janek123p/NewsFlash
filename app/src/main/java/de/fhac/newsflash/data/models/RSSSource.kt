@@ -8,13 +8,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
-/**
- * Model representing a news source.
- *
- * @param id Internal id for database purposes
- * @param name Name of the source
- * @param url Link to the rss feed of the source
- */
 @Parcelize
 data class RSSSource(override val id: Long, private val name: String, private val url: String) :
     ISource {

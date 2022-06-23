@@ -7,15 +7,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 
 /**
- * Model representing a news article.
- *
- * @param id Internal id of the news for database purpose
- * @param title Title of the article
- * @param description Description of the article
- * @param url Url to the website of the article
- * @param pubDate Publishing date of the article
- * @param imageUrl Url of the preview image of the article
- * @param source Source of the article
+ * Model representing a news.
  */
 @Parcelize
 class News(
