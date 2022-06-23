@@ -34,8 +34,8 @@ import de.fhac.newsflash.ui.NewsBottomSheetCallback
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
-import de.fhac.newsflash.ui.adapter.FilterAdapter
 import de.fhac.newsflash.ui.adapter.NewsListAdapter
+import de.fhac.newsflash.ui.filter.FilterHandler
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
-    private lateinit var filterAdapter: FilterAdapter
+    private lateinit var filterHandler: FilterHandler
     private var currentFilter: Filter? = null
 
 
@@ -161,8 +161,8 @@ class MainActivity : AppCompatActivity() {
      * Initializes and loads Filters
      */
     private fun initFilters() {
-        filterAdapter = FilterAdapter(this)
-        binding.filter.sourceFilterContainer.adapter = filterAdapter
+        supportFragmentManager.beginTransaction().replace(R.id.filter, FilterHandler(this))
+            .commit()
     }
 
     /**
@@ -210,17 +210,6 @@ class MainActivity : AppCompatActivity() {
             btShowInBrowser.setOnClickListenerWithAnimation { showCurrentNewsInBrowser() }
             btSave.setOnClickListenerWithAnimation { saveOrRemoveCurrentNewsToFavorites() }
             btRefresh.setOnClickListenerWithAnimation { refreshCurrentNews() }
-        }
-
-        // Add filter callback
-        binding.filter.apply {
-            filterDropdownButton.setOnClickListenerWithAnimation {
-                if (filters.visibility == View.VISIBLE) {
-                    filters.visibility = View.GONE
-                } else if (filters.visibility == View.GONE) {
-                    filters.visibility = View.VISIBLE
-                }
-            }
         }
     }
 
