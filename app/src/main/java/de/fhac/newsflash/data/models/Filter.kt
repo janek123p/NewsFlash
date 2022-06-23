@@ -1,9 +1,13 @@
 package de.fhac.newsflash.data.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Model representing a filter. Containing the sources and tags to filter by.
  */
-class Filter {
+@Parcelize
+class Filter : Parcelable{
 
     internal val sources = mutableListOf<ISource>();
     internal val tags = mutableListOf<Tag>();
