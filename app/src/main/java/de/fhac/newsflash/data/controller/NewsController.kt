@@ -185,7 +185,7 @@ object NewsController {
 
         for (source in SourceController.getSourceStream().getLatest()!!) { //Load news from sources
             try {
-                if(source.getUrl().contains("cnn", true))
+                if (source.getUrl().contains("cnn", true))
                     throw Exception("Hallo");
 
                 val news = RssService.parseNews(source.getUrl());
@@ -215,18 +215,29 @@ object NewsController {
     private fun filtered(toFilter: List<News>): List<News> {
         if (filter == null || (filter!!.tags.isEmpty() && filter!!.sources.isEmpty())) return toFilter;
 
-        return toFilter.filter { news ->
-            filter?.sources?.any { iSource ->
-                iSource.getUrl().equals(news.source?.getUrl(), true)
-            } ?: true &&
-                    (filter?.tags?.any { tag ->
-                        tag.keywords.any { s ->
-                            news.title.contains(
-                                s
-                            ) || news.description.contains(s)
-                        }
-                    } ?: true)
+        var filtered = toFilter;
+
+        if (filter!!.sources.isNotEmpty()) {
+            filtered = filtered.filter { news ->
+                filter!!.sources.any { iSource ->
+                    iSource.getUrl().equals(news.source?.getUrl(), true)
+                }
+            }
         }
+
+        if (filter!!.tags.isNotEmpty()) {
+            filtered = filtered.filter { news ->
+                (filter!!.tags.any { tag ->
+                    tag.keywords.any { s ->
+                        news.title.contains(
+                            s
+                        ) || news.description.contains(s)
+                    }
+                })
+            }
+        }
+
+        return filtered;
     }
 
     /**
