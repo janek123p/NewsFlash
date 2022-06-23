@@ -28,7 +28,7 @@ object NewsController {
             var fav = AppDatabase.getDatabase()?.newsRepository()?.getAllFavorites()
             var mapped = fav?.map { databaseNewsWithSource -> databaseNewsWithSource.toNews() }
 
-            favorites.addAll(mapped?.toMutableList() ?: mutableListOf())
+            favorites.addAll(mapped ?: listOf())
 
             favoritesController.getSink().add(filtered(favorites));
         }
@@ -44,8 +44,7 @@ object NewsController {
             news.addAll(
                 AppDatabase.getDatabase()?.newsRepository()?.getAllNonFavorites()
                     ?.map { databaseNewsWithSource -> databaseNewsWithSource.toNews() }
-                    ?.toMutableList()
-                    ?: mutableListOf()
+                    ?: listOf()
             )
 
             newsController.getSink().add(NewsEvent.NewsLoadedEvent(filtered(news)));
@@ -60,7 +59,7 @@ object NewsController {
             var newsRepo = AppDatabase.getDatabase()?.newsRepository()
 
             newsRepo?.deleteAllNonFavorites();
-            newsRepo?.insertAllIgnore(news.map { news -> news.toDatabase(false) }.toList())
+            newsRepo?.insertAllIgnore(news.map { news -> news.toDatabase(false) })
         } catch (e: Exception) {
 
         }
@@ -126,10 +125,6 @@ object NewsController {
                     )
                 };
 
-                withContext(Dispatchers.Default){
-                    var favs = AppDatabase.getDatabase()?.newsRepository()?.getAllFavorites();
-                    println(favs?.size ?: "KEINE DATEN!")
-                }
                 favoritesController.getSink().add(favorites);
                 return true
             } catch (e: Exception) {
