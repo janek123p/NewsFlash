@@ -38,11 +38,12 @@ import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import de.fhac.newsflash.ui.filter.FilterHandler
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private var filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
@@ -59,17 +60,17 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
-        val pullToRefresh: SwipeRefreshLayout = findViewById(R.id.pullToRefresh);
-        pullToRefresh.setOnRefreshListener {
-            reloadNewsData()
-        }
+
         AppDatabase.initDatabase(applicationContext)
         initFilters()
         initNewsData()
         initBottomSheet()
+        initSwipeRefreshLayout()
+        initTitleBar()
         addCallbacks()
         addNavigationCallbacks()
     }
+
 
     /**
      * Restore lastly loaded news e.g. when device is rotated
@@ -107,6 +108,29 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         newsListAdapter.pauseSubscriptions()
         super.onStop()
+    }
+
+    /**
+     * Initialize title bar
+     */
+    private fun initTitleBar() {
+        val hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        when (hourOfDay) {
+            in 4..10 -> getString(R.string.good_morning)
+            in 11..17 -> getString(R.string.good_day)
+            in 18..22 -> getString(R.string.good_evening)
+            else -> getString(R.string.good_night)
+        }.also { binding.titleBar.appTitle.text = it }
+    }
+
+    /**
+     *  Initialize SwipeRefreshLayout for ListView
+     */
+    private fun initSwipeRefreshLayout() {
+        val pullToRefresh: SwipeRefreshLayout = binding.pullToRefresh
+        pullToRefresh.setOnRefreshListener {
+            reloadNewsData()
+        }
     }
 
 

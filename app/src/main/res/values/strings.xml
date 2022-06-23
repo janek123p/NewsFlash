@@ -9,6 +9,11 @@
     <string name="add">Hinzufügen</string>
     <string name="rss_feeds">RSS-Feeds:</string>
 
+    <string name="good_morning">Guten Morgen!</string>
+    <string name="good_day">Guten Tag!</string>
+    <string name="good_evening">Guten Abend!</string>
+    <string name="good_night">Gute Nacht!</string>
+
     <string name="news_from">Nachrichten von</string>
     <string name="which_app_to_share">Welche App soll verwendet werden?</string>
     <string name="read_this_article">Lies dir diesen Artikel durch, den ich über NewsFlash gefunden habe:</string>
