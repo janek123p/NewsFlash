@@ -53,8 +53,7 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
                 }
             }
             val filter = Filter()
-            val sub: StreamSubscription<MutableList<ISource>> =
-                SourceController.getSourceStream().listen(this@FilterHandler::updateSources, pushLatest = true)
+            //val sub: StreamSubscription<MutableList<ISource>> = SourceController.getSourceStream().listen(this@FilterHandler::updateSources, pushLatest = true)
             val sources: MutableList<ISource>? = SourceController.getSourceStream().getLatest()
             val tags: MutableList<Tag> = mutableListOf(*Tag.values())
             val selectedFilterView = findViewById<RecyclerView>(R.id.selected_filter_container)

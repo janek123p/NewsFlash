@@ -45,7 +45,6 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-    private var filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
@@ -161,7 +160,7 @@ class MainActivity : AppCompatActivity() {
             setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.favorites_nav -> {
-                        filterFavourites = true
+                        newsListAdapter.setFavorite(true)
                         reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
@@ -169,7 +168,7 @@ class MainActivity : AppCompatActivity() {
 
                 when (it.itemId) {
                     R.id.news_nav -> {
-                        filterFavourites = false
+                        newsListAdapter.setFavorite(false)
                         reloadNewsData()
                         return@setOnItemSelectedListener true
                     }

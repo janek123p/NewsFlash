@@ -7,7 +7,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.NewsEvent
-import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.stream.StreamSubscription
 import de.fhac.newsflash.ui.activities.MainActivity
@@ -26,6 +25,11 @@ class NewsListAdapter(
 
     private var sub: StreamSubscription<NewsEvent> =
         NewsController.getNewsStream().listen(this::notify, true)
+
+    private var favSub: StreamSubscription<List<News>> =
+        NewsController.getFavoritesStream().listen(this::notifyFav, true)
+
+    var favorites = false;
 
     private var viewGroups: List<NewsViewGroup>? = null
 
@@ -60,10 +64,12 @@ class NewsListAdapter(
      * @param newsList new news data
      */
     private fun notify(event: NewsEvent?) {
+        if (favorites) return
         GlobalScope.launch {
             if (event is NewsEvent.NewsLoadingEvent) {
                 mainActivity.runOnUiThread {
-                    val pullToRefresh: SwipeRefreshLayout = mainActivity.findViewById(R.id.pullToRefresh);
+                    val pullToRefresh: SwipeRefreshLayout =
+                        mainActivity.findViewById(R.id.pullToRefresh);
                     pullToRefresh.isRefreshing = true
                 }
             } else if (event is NewsEvent.NewsLoadedEvent) {
@@ -72,14 +78,42 @@ class NewsListAdapter(
                 viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
                 mainActivity.runOnUiThread {
                     notifyDataSetChanged()
-                    val pullToRefresh: SwipeRefreshLayout = mainActivity.findViewById(R.id.pullToRefresh);
+                    val pullToRefresh: SwipeRefreshLayout =
+                        mainActivity.findViewById(R.id.pullToRefresh);
                     pullToRefresh.isRefreshing = false
                 }
             }
-
         }
     }
 
+    private fun notifyFav(favoritesList: List<News>?) {
+        if (!favorites) return
+        GlobalScope.launch {
+            val data = favoritesList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+            viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
+            mainActivity.runOnUiThread {
+                notifyDataSetChanged()
+                val pullToRefresh: SwipeRefreshLayout =
+                    mainActivity.findViewById(R.id.pullToRefresh);
+                pullToRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    fun setFavorite(v: Boolean) {
+        favorites = v
+        if (!favorites) return
+        GlobalScope.launch {
+            val data = NewsController.getFavoritesStream().getLatest()?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+            viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
+            mainActivity.runOnUiThread {
+                notifyDataSetChanged()
+                val pullToRefresh: SwipeRefreshLayout =
+                    mainActivity.findViewById(R.id.pullToRefresh);
+                pullToRefresh.isRefreshing = false
+            }
+        }
+    }
 
     override fun getViewTypeCount(): Int {
         return NewsViewGroup.TYPE.values().size
