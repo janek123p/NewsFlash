@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import de.fhac.newsflash.R
+import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.controller.SourceController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.ISource
@@ -42,7 +43,7 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
                     filters.visibility = View.VISIBLE
                 }
             }
-            val filter: Filter = Filter()
+            val filter = Filter()
             val sources: MutableList<ISource>? = SourceController.getSourceStream().getLatest()
             val tags: MutableList<Tag> = mutableListOf(*Tag.values())
             val selectedFilterView = findViewById<RecyclerView>(R.id.selected_filter_container)

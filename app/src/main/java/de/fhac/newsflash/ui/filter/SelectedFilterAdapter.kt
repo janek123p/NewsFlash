@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import de.fhac.newsflash.R
+import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.Tag
@@ -43,11 +44,13 @@ class SelectedFilterAdapter(
     fun addFilterItem(source: ISource) {
         this.filter.add(source)
         notifyItemInserted(filter.sources.indexOf(source))
+        NewsController.setFilter(filter)
     }
 
     fun addFilterItem(tag: Tag) {
         this.filter.add(tag)
         notifyItemInserted(filter.tags.indexOf(tag) + filter.sources.count())
+        NewsController.setFilter(filter)
     }
 
     private fun removeFilterItem(source: ISource): () -> Unit {

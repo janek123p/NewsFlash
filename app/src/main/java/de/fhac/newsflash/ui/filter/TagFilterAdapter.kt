@@ -30,25 +30,21 @@ class TagFilterAdapter(
     }
 
     fun addFilterItem(tag: Tag) {
-        this.tags.plus(tag)
-        notifyItemInserted(tags.count())
+        this.tags.add(tag)
+        notifyItemInserted(tags.count() - 1)
     }
 
-
-    fun selectFilterItem(tag: Tag): () -> Unit {
+    private fun selectFilterItem(tag: Tag): () -> Unit {
         return {
-            removeFilterItem(tag)
             filterHandler.selectFilter(tag)
+            removeFilterItem(tag)
         }
     }
 
-    fun removeFilterItem(tag: Tag): () -> Unit {
-        return {
-            val itemIndex = tags.indexOf(tag)
-            filterHandler.removeFilter(tag)
-            tags.remove(tag)
-            notifyItemRemoved(itemIndex)
-        }
+    private fun removeFilterItem(tag: Tag) {
+        val itemIndex = tags.indexOf(tag)
+        tags!!.removeAt(itemIndex)
+        notifyItemRemoved(itemIndex)
     }
 }
 
