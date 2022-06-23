@@ -70,9 +70,9 @@ class FilterHandler(val mainActivity: MainActivity?) : Fragment() {
                 LinearLayoutManager(mainActivity, RecyclerView.HORIZONTAL, false)
             tagFilterAdapter = tagFilterView.adapter as TagFilterAdapter
 
-            fun updateSources(sources: MutableList<ISource>?) {
+            fun updateSources(sources: List<ISource>?) {
                 GlobalScope.launch {
-                    sourceFilterAdapter.sources = sources
+                    sourceFilterAdapter.sources = sources?.toMutableList()
                     mainActivity.runOnUiThread{
                         sourceFilterAdapter.notifyDataSetChanged()
                     }
