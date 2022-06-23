@@ -37,9 +37,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@android:string/untitled"
-        app:layout_constraintBottom_toTopOf="@+id/filters"
+        app:layout_constraintBottom_toBottomOf="@+id/selected_filter_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/selected_filter_container"
+        app:layout_constraintTop_toTopOf="@+id/selected_filter_title"
         app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down_24" />
 
     <LinearLayout
