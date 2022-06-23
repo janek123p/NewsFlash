@@ -187,6 +187,12 @@ object NewsController {
         newsController.getSink()
             .add(NewsEvent.NewsLoadingEvent()) //Notify subscribers that loading is in progress
 
+        if (SourceController.getSourceStream()
+                .getLatest() == null
+        ) { //Init source controller if not happened
+            SourceController.init();
+        };
+
         //If no internet connection available load from cache
         if (!isInternetAvailable()) {
             if (news.isEmpty()) { //Load from db is no cached news available
@@ -204,11 +210,6 @@ object NewsController {
         val allNews = mutableListOf<News>()
         var errors = mutableListOf<Exception>()
 
-        if (SourceController.getSourceStream()
-                .getLatest() == null
-        ) { //Init source controller if not happened
-            SourceController.init();
-        };
 
         for (source in SourceController.getSourceStream().getLatest()!!) { //Load news from sources
             try {

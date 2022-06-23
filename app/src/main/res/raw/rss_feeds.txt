@@ -549,7 +549,6 @@ https://www.aachener-zeitung.de/ratgeber/lifestyle/feed.rss
 //Weitere
 http://rss.cnn.com/rss/cnn_topstories.rss
 https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml
-https://www.huffpost.com/section/front-page/feed?x=1
 //http://www.foxnews.com/about/rss/
 https://lifehacker.com/rss
 https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best
@@ -557,7 +556,7 @@ https://cdn.feedcontrol.net/8/1114-wioSIX3uu8MEj.xml
 https://www.latimes.com/local/rss2.0.xml
 https://feeds.bbci.co.uk/news/world/rss.xml
 http://rss.cnn.com/rss/edition_world.rss
-https://feeds.washingtonpost.com/rss/world
+https://www.washingtontimes.com/rss/headlines/news/world/
 https://www.cnbc.com/id/100727362/device/rss/rss.html
 https://abcnews.go.com/abcnews/internationalheadlines
 https://www.nature.com/nmat/journal/vaop/ncurrent/rss.rdf
