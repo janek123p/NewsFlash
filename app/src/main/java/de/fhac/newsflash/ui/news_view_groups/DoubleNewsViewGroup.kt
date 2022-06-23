@@ -57,7 +57,7 @@ class DoubleNewsViewGroup(
                 txtSource2.visibility = View.GONE
             }
 
-            // Add OnClickListener for both news element to show news in detailed view
+            // Add OnClickListener for both news elements to show news in detailed view
             findViewById<LinearLayout>(R.id.lin_layout_news).setOnClickListenerWithAnimation {
                 mainActivity.showDetailedNews(
                     data1

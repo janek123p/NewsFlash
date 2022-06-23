@@ -122,13 +122,15 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
          * @param indicesToDo List of indices that still must be mapped to a NewsViewGroup
          * @param mainActivity MainActivity
          * @param minGroupSize Minimal size a group of news must have to be accounted
+         * @param maxSumDistance Maximal sum of distances between the news of a group
+         * @param maxDistance Maximal distance between two news of a group
          */
         private fun extractGroups(
             data: List<News>,
             indicesToDo: MutableList<Int>,
             mainActivity: MainActivity,
             minGroupSize: Int = 4,
-            maxSumDistance: Int = 10,
+            maxSumDistance: Int = 12,
             maxDistance: Int = 4
         ): List<HorizontalScrollNewsViewGroup> {
             val viewGroups = mutableListOf<HorizontalScrollNewsViewGroup>()
@@ -151,8 +153,8 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                     // Get index of news in data (corresponds to publishing date)
                     val newIndex = data.indexOf(newsBySource[i])
                     // If temporal proximity is given (difference of indices in data is less or
-                    // equal to 3) and summed distance of the current group of news is less than 8
-                    // add this news to the group
+                    // equal to maxDistance and summed distance of the current group of
+                    // news is less or equal to maxSumDistance) add this news to the group
                     if (newIndex - indexOfNews <= maxDistance && sumDistance <= maxSumDistance) {
                         indicesToRemove += newIndex
                         sumDistance += (newIndex - indexOfNews - 1)
@@ -160,8 +162,7 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                         ++i
                     }
                     // if the above stated conditions are not fulfilled or last news item is reached
-                    // close group if it has at least minGroupSize items and eventually look for
-                    // next group
+                    // close group if it has at least minGroupSize items
                     if (!(newIndex - indexOfNews <= maxDistance && sumDistance <= maxSumDistance)
                         || i == newsBySource.size
                     ) {
@@ -247,7 +248,8 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                     ): Boolean {
                         // If loading URL has worked load image resource into ImageView
                         mainActivity.runOnUiThread {
-                            Glide.with(mainActivity).load(resource).into(iv)
+                            if (!mainActivity.isDestroyed)
+                                Glide.with(mainActivity).load(resource).into(iv)
                         }
                         return true
                     }

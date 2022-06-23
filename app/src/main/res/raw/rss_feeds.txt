@@ -554,7 +554,6 @@ https://www.huffpost.com/section/front-page/feed?x=1
 https://lifehacker.com/rss
 https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best
 https://cdn.feedcontrol.net/8/1114-wioSIX3uu8MEj.xml
-https://www.yahoo.com/news/rss
 https://www.latimes.com/local/rss2.0.xml
 https://feeds.bbci.co.uk/news/world/rss.xml
 http://rss.cnn.com/rss/edition_world.rss

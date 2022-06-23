@@ -59,12 +59,13 @@ class NewsListAdapter(
      */
     private fun notify(event: NewsEvent?) {
         GlobalScope.launch {
-            if(event is NewsEvent.NewsLoadingEvent){
+            if (event is NewsEvent.NewsLoadingEvent) {
                 mainActivity.runOnUiThread {
                     mainActivity.binding.loadingIndicatorTop.visibility = View.VISIBLE
                 }
-            }else if(event is NewsEvent.NewsLoadedEvent){
-                val data = event.news?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+            } else if (event is NewsEvent.NewsLoadedEvent) {
+                val data =
+                    event.news?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
                 viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
                 mainActivity.runOnUiThread {
                     notifyDataSetChanged()
