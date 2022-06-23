@@ -3,8 +3,10 @@ package de.fhac.newsflash.ui.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import android.widget.BaseAdapter
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
+import de.fhac.newsflash.data.controller.NewsEvent
 import de.fhac.newsflash.data.models.Filter
 import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.stream.StreamSubscription
@@ -22,38 +24,20 @@ class NewsListAdapter(
     private val mainActivity: MainActivity
 ) : BaseAdapter() {
 
-    private var newsSub: StreamSubscription<List<News>> =
-        NewsController.getNewsStream().listen(this::notifyNews, true)
-    private var newsData: List<News> = listOf()
-
-    private var favSub: StreamSubscription<List<News>> =
-        NewsController.getFavoritesStream().listen(this::notifyFavorites, true)
-    private var favData: List<News> = listOf()
+    private var sub: StreamSubscription<NewsEvent> =
+        NewsController.getNewsStream().listen(this::notify, true)
 
     private var viewGroups: List<NewsViewGroup>? = null
-
-    var filterFavorites: Boolean = false
 
     /**
      * Launch task to reload data
      */
     fun launchReloadData(
         onFinished: Runnable? = null,
-        filter: Filter? = null,
-        filterFavourites: Boolean? = false
     ) {
         GlobalScope.launch {
-            NewsController.refresh(filter)
-            val data: List<News> = if (filterFavorites) {
-                favData
-            } else {
-                newsData
-            }
-            viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
-            mainActivity.runOnUiThread {
-                notifyDataSetChanged()
-                onFinished?.run()
-            }
+            NewsController.refresh()
+            onFinished?.run()
         }
     }
 
@@ -61,43 +45,41 @@ class NewsListAdapter(
      * Pause news subscription
      */
     fun pauseSubscriptions() {
-        favSub.pause()
-        newsSub.pause()
+        sub.pause()
     }
 
     /**
      * Resume news subscription
      */
     fun resumeSubscriptions() {
-        newsSub.resume()
-        favSub.resume()
+        sub.resume()
     }
 
     /**
      * Function to be called, when new news data arrives
      * @param newsList new news data
      */
-    private fun notifyNews(newsList: List<News>?) {
+    private fun notify(event: NewsEvent?) {
         GlobalScope.launch {
-            newsData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
-            mainActivity.runOnUiThread {
-                notifyDataSetChanged()
+            if (event is NewsEvent.NewsLoadingEvent) {
+                mainActivity.runOnUiThread {
+                    val pullToRefresh: SwipeRefreshLayout = mainActivity.findViewById(R.id.pullToRefresh);
+                    pullToRefresh.isRefreshing = true
+                }
+            } else if (event is NewsEvent.NewsLoadedEvent) {
+                val data =
+                    event.news?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
+                viewGroups = NewsViewGroup.createViewGroups(data, mainActivity)
+                mainActivity.runOnUiThread {
+                    notifyDataSetChanged()
+                    val pullToRefresh: SwipeRefreshLayout = mainActivity.findViewById(R.id.pullToRefresh);
+                    pullToRefresh.isRefreshing = false
+                }
             }
+
         }
     }
 
-    /**
-     * Function to be called, when new favorite news data arrives
-     * @param newsList new news data
-     */
-    private fun notifyFavorites(newsList: List<News>?) {
-        GlobalScope.launch {
-            favData = newsList?.sortedByDescending { news -> news.pubDate } ?: mutableListOf()
-            mainActivity.runOnUiThread {
-                notifyDataSetChanged()
-            }
-        }
-    }
 
     override fun getViewTypeCount(): Int {
         return NewsViewGroup.TYPE.values().size
@@ -106,6 +88,7 @@ class NewsListAdapter(
     override fun getItemViewType(position: Int): Int {
         return viewGroups!![position].getType().getInt()
     }
+
     override fun getCount(): Int {
         return viewGroups?.count() ?: 0
     }
@@ -119,8 +102,6 @@ class NewsListAdapter(
     }
 
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View? {
-        println(position)
-
         return if (view?.tag == getItemViewType(position)) {
             // No new layout inflation needed ==> pass view to getView-method
             viewGroups!![position].getView(view)

@@ -1,5 +1,8 @@
 package de.fhac.newsflash.data.models
 
+/**
+ * Model representing a filter. Containing the sources and tags to filter by.
+ */
 class Filter {
 
     internal val sources = mutableListOf<ISource>();
@@ -9,7 +12,7 @@ class Filter {
     /**
      * Add a source to the filter
      */
-    fun add(source: ISource) : Filter{
+    fun add(source: ISource) : Filter {
         if(!sources.contains(source))
             sources.add(source);
         return this;

@@ -7,8 +7,6 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Html
 import android.view.View
 import android.webkit.WebChromeClient
@@ -22,11 +20,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.cardview.widget.CardView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import de.fhac.newsflash.ui.adapter.FilterAdapter
-import de.fhac.newsflash.ui.NewsBottomSheetCallback
-import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import de.fhac.newsflash.R
 import de.fhac.newsflash.data.controller.NewsController
 import de.fhac.newsflash.data.models.Filter
@@ -34,15 +30,19 @@ import de.fhac.newsflash.data.models.News
 import de.fhac.newsflash.data.repositories.AppDatabase
 import de.fhac.newsflash.databinding.ActivityMainBinding
 import de.fhac.newsflash.databinding.BottomSheetBinding
+import de.fhac.newsflash.ui.NewsBottomSheetCallback
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
+import de.fhac.newsflash.ui.adapter.FilterAdapter
+import de.fhac.newsflash.ui.adapter.NewsListAdapter
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 
 class MainActivity : AppCompatActivity() {
+    private var filterFavourites: Boolean = false
     private lateinit var newsListAdapter: NewsListAdapter
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var bottomSheetBinding: BottomSheetBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private var currentNews: News? = null
@@ -59,6 +59,10 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding = binding.bottomSheet
         setContentView(binding.root)
 
+        val pullToRefresh: SwipeRefreshLayout = findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener {
+            reloadNewsData()
+        }
         AppDatabase.initDatabase(applicationContext)
         initFilters()
         initNewsData()
@@ -114,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.favorites_nav -> {
-                        newsListAdapter.filterFavorites = true
+                        filterFavourites = true
                         reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
@@ -122,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
                 when (it.itemId) {
                     R.id.news_nav -> {
-                        newsListAdapter.filterFavorites = false
+                        filterFavourites = false
                         reloadNewsData()
                         return@setOnItemSelectedListener true
                     }
@@ -150,12 +154,7 @@ class MainActivity : AppCompatActivity() {
      * Reload News
      */
     private fun reloadNewsData() {
-        binding.loadingIndicatorTop.visibility = View.VISIBLE
-        newsListAdapter.launchReloadData(onFinished = {
-            runOnUiThread {
-                binding.loadingIndicatorTop.visibility = View.GONE
-            }
-        }, currentFilter, filterFavourites)
+        newsListAdapter.launchReloadData()
     }
 
     /**
@@ -240,7 +239,7 @@ class MainActivity : AppCompatActivity() {
         valueInRange = if (value > 1f) 1f else valueInRange
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            binding.mainConstraintLayout.setRenderEffect(
+            binding.mainRelativLayout.setRenderEffect(
                 if (value < .1) null else RenderEffect.createBlurEffect(
                     valueInRange * 10f,
                     valueInRange * 10f,
