@@ -19,8 +19,6 @@
     <string name="read_this_article">Lies dir diesen Artikel durch, den ich über NewsFlash gefunden habe:</string>
     <string name="error_while_adding_rss_feed">Fehler beim Hinzufügen des RSS-Feeds</string>
     <string name="invalid_url">Ungültige Url</string>
-    <string name="saved_to_favs">Die Nachricht wurde zu deinen Favoriten hinzugefügt.</string>
-    <string name="removed_from_favs">Die Nachricht wurde aus deinen Favoriten entfernt.</string>
     <string name="source_title">Quellen</string>
     <string name="topic_title">Themen</string>
     <string name="selected_filter_title">Filter </string>

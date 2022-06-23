@@ -409,15 +409,12 @@ class MainActivity : AppCompatActivity() {
                     NewsController.removeFavorite(news)
                 }
 
-                Toast.makeText(this@MainActivity, R.string.removed_from_favs, Toast.LENGTH_SHORT)
-                    .show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             } else {
                 GlobalScope.launch {
                     NewsController.addFavorite(news)
                 }
 
-                Toast.makeText(this@MainActivity, R.string.saved_to_favs, Toast.LENGTH_SHORT).show()
                 bottomSheetBinding.btSave.setBackgroundResource(R.drawable.ic_baseline_star_24)
             }
         }

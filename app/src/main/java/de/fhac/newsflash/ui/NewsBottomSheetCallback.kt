@@ -53,6 +53,7 @@ class NewsBottomSheetCallback(
      */
     override fun onSlide(bottomSheet: View, slideOffset: Float) {
         if (slideOffset > 0) {
+            setWebContentVisible()
             binding.apply {
                 // Fading animation between WebView and preview group
                 webViewGroup.alpha = slideOffset
