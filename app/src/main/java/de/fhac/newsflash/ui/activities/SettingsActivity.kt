@@ -1,6 +1,8 @@
 package de.fhac.newsflash.ui.activities
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -14,9 +16,9 @@ import de.fhac.newsflash.databinding.ActivitySettingsBinding
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.streams.toList
-
 
 
 /**
