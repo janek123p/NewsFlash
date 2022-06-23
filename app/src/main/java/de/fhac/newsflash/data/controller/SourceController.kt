@@ -1,6 +1,5 @@
 package de.fhac.newsflash.data.controller
 
-import android.provider.ContactsContract
 import de.fhac.newsflash.data.models.ISource
 import de.fhac.newsflash.data.models.RSSSource
 import de.fhac.newsflash.data.repositories.AppDatabase
@@ -8,7 +7,6 @@ import de.fhac.newsflash.data.repositories.models.DatabaseSource
 import de.fhac.newsflash.data.service.RssService
 import de.fhac.newsflash.data.stream.StreamSubscription.Stream.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 object SourceController {

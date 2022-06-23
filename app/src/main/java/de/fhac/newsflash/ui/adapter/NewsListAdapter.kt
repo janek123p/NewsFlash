@@ -90,8 +90,6 @@ class NewsListAdapter(
     }
 
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View? {
-        println(position)
-
         return if (view?.tag == getItemViewType(position)) {
             // No new layout inflation needed ==> pass view to getView-method
             viewGroups!![position].getView(view)

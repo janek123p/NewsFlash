@@ -84,10 +84,13 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                 var numSingle = 0
 
                 while (indicesToDo.size > 0) {
-                    // calculate propability for choosing DoubleViewGroup
+                    // calculate probability for choosing DoubleViewGroup
                     val probability =
-                        if (numDouble + numSingle < 2) 0.3 else 0.6 * numSingle / (numDouble + numSingle)
-                    if (indicesToDo.size >= 2 && Math.random() < probability) {
+                        if (numDouble + numSingle < 2) 0.15 else 0.4 * numSingle / (numDouble + numSingle)
+
+                    if (indicesToDo.size >= 2 && (Math.random() < probability ||
+                                (data[indicesToDo[0]].imageUrl == null && data[indicesToDo[1]].imageUrl == null))
+                    ) {
                         // Add DoubleNewsViewGroup
                         list.add(
                             DoubleNewsViewGroup(
@@ -124,7 +127,9 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
             data: List<News>,
             indicesToDo: MutableList<Int>,
             mainActivity: MainActivity,
-            minGroupSize: Int = 4
+            minGroupSize: Int = 4,
+            maxSumDistance: Int = 10,
+            maxDistance: Int = 4
         ): List<HorizontalScrollNewsViewGroup> {
             val viewGroups = mutableListOf<HorizontalScrollNewsViewGroup>()
             val indicesToRemove = mutableListOf<Int>()
@@ -132,7 +137,7 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
             // Group data by source
             val sourceMap = data.groupBy { news -> news.source }
 
-            // For every source look for temporal proximities
+            // For every source look for temporal proximity
             for (source in sourceMap.keys) if (source != null) {
                 // Sort news by publishing date
                 val newsBySource = sourceMap[source]!!.sortedByDescending { news -> news.pubDate }
@@ -148,7 +153,7 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                     // If temporal proximity is given (difference of indices in data is less or
                     // equal to 3) and summed distance of the current group of news is less than 8
                     // add this news to the group
-                    if (newIndex - indexOfNews <= 3 && sumDistance < 8) {
+                    if (newIndex - indexOfNews <= maxDistance && sumDistance <= maxSumDistance) {
                         indicesToRemove += newIndex
                         sumDistance += (newIndex - indexOfNews - 1)
                         indexOfNews = newIndex
@@ -157,7 +162,9 @@ abstract class NewsViewGroup(protected val mainActivity: MainActivity) {
                     // if the above stated conditions are not fulfilled or last news item is reached
                     // close group if it has at least minGroupSize items and eventually look for
                     // next group
-                    if (!(newIndex - indexOfNews <= 3 && sumDistance < 8) || i == newsBySource.size) {
+                    if (!(newIndex - indexOfNews <= maxDistance && sumDistance <= maxSumDistance)
+                        || i == newsBySource.size
+                    ) {
                         if (indicesToRemove.size > minGroupSize) {
                             viewGroups += HorizontalScrollNewsViewGroup(
                                 data.slice(indicesToRemove),

@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity() {
         valueInRange = if (value > 1f) 1f else valueInRange
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            binding.mainConstraintLayout.setRenderEffect(
+            binding.mainRelativLayout.setRenderEffect(
                 if (value < .1) null else RenderEffect.createBlurEffect(
                     valueInRange * 10f,
                     valueInRange * 10f,
