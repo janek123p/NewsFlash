@@ -21,22 +21,24 @@ import de.fhac.newsflash.ui.activities.MainActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class FilterHandler(val mainActivity: MainActivity) : Fragment() {
+class FilterHandler(val mainActivity: MainActivity?) : Fragment() {
     private lateinit var selectedFilterAdapter: SelectedFilterAdapter
     private lateinit var sourceFilterAdapter: SourceFilterAdapter
     private lateinit var tagFilterAdapter: TagFilterAdapter
+
+    constructor() : this(null)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val inflater = mainActivity
-            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val inflater =
+            mainActivity?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
 
-        val convertView = inflater.inflate(R.layout.filter_container, null)
+        val convertView = inflater?.inflate(R.layout.filter_container, null)
 
-        return convertView.apply {
+        return convertView?.apply {
             findViewById<ImageView>(R.id.filter_dropdown_button).setOnClickListener {
                 val filters = findViewById<LinearLayout>(R.id.filters)
                 if (filters.visibility == View.VISIBLE) {
@@ -45,12 +47,14 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
                     filters.visibility = View.VISIBLE
                 }
             }
+
             val filter = Filter()
             val sources: MutableList<ISource>? = SourceController.getSourceStream().getLatest()
             val tags: MutableList<Tag> = mutableListOf(*Tag.values())
             val selectedFilterView = findViewById<RecyclerView>(R.id.selected_filter_container)
+
             selectedFilterView.adapter =
-                SelectedFilterAdapter(filter, mainActivity, this@FilterHandler)
+                SelectedFilterAdapter(filter, mainActivity!!, this@FilterHandler)
             selectedFilterView.layoutManager =
                 LinearLayoutManager(mainActivity, RecyclerView.HORIZONTAL, false)
             selectedFilterAdapter = selectedFilterView.adapter as SelectedFilterAdapter
@@ -73,9 +77,11 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
                 }
             }
 
-            val sourceSub: StreamSubscription<MutableList<ISource>> = SourceController.getSourceStream().listen(::updateSources, pushLatest = true)
+            val sourceSub: StreamSubscription<MutableList<ISource>> =
+                SourceController.getSourceStream().listen(::updateSources, pushLatest = true)
         }
     }
+
     fun selectFilter(source: ISource) {
         selectedFilterAdapter.addFilterItem(source)
     }
