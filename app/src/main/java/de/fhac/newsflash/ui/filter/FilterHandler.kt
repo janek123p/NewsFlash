@@ -26,13 +26,6 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
     private lateinit var sourceFilterAdapter: SourceFilterAdapter
     private lateinit var tagFilterAdapter: TagFilterAdapter
 
-    fun updateSources(sources: MutableList<ISource>?) {
-        GlobalScope.launch {
-            //sourceFilterAdapter.sources = sources
-            //sourceFilterAdapter.notifyDataSetChanged()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,7 +46,6 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
                 }
             }
             val filter = Filter()
-            //val sub: StreamSubscription<MutableList<ISource>> = SourceController.getSourceStream().listen(this@FilterHandler::updateSources, pushLatest = true)
             val sources: MutableList<ISource>? = SourceController.getSourceStream().getLatest()
             val tags: MutableList<Tag> = mutableListOf(*Tag.values())
             val selectedFilterView = findViewById<RecyclerView>(R.id.selected_filter_container)
@@ -73,6 +65,15 @@ class FilterHandler(val mainActivity: MainActivity) : Fragment() {
             tagFilterView.layoutManager =
                 LinearLayoutManager(mainActivity, RecyclerView.HORIZONTAL, false)
             tagFilterAdapter = tagFilterView.adapter as TagFilterAdapter
+
+            fun updateSources(sources: MutableList<ISource>?) {
+                GlobalScope.launch {
+                    sourceFilterAdapter.sources = sources
+                    sourceFilterAdapter.notifyDataSetChanged()
+                }
+            }
+
+            val sourceSub: StreamSubscription<MutableList<ISource>> = SourceController.getSourceStream().listen(::updateSources, pushLatest = true)
         }
     }
     fun selectFilter(source: ISource) {
