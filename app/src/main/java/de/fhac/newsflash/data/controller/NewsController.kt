@@ -238,7 +238,10 @@ object NewsController {
      * Filters the specified list of news by the injected filter.
      */
     private fun filtered(toFilter: List<News>): List<News> {
-        if (filter == null || (filter!!.tags.isEmpty() && filter!!.sources.isEmpty())) return toFilter;
+        if(filter == null) return toFilter;
+        var filter = this.filter!!.copy();
+
+        if((filter!!.tags.isEmpty() && filter!!.sources.isEmpty())) return toFilter;
 
         var filtered = toFilter.toList();
 

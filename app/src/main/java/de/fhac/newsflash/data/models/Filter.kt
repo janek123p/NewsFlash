@@ -8,6 +8,12 @@ class Filter {
     internal val sources = mutableListOf<ISource>();
     internal val tags = mutableListOf<Tag>();
 
+    fun copy() : Filter{
+        var filter = Filter();
+        filter.sources.addAll(sources)
+        filter.tags.addAll(tags)
+        return filter;
+    }
 
     /**
      * Add a source to the filter
