@@ -26,29 +26,4 @@ data class RSSSource(override val id: Long, private val name: String, private va
     override fun getUrl(): String {
         return url;
     }
-
-    companion object {
-        suspend fun isValidRSSLink(url : String): Boolean {
-            val result = GlobalScope.async {
-                if(!URLUtil.isValidUrl(url)){
-                    return@async false
-                }
-                try {
-                    val huc: HttpURLConnection = URL(url).openConnection() as HttpURLConnection
-                    if (huc.responseCode != HttpURLConnection.HTTP_OK){
-                        return@async false
-                    }
-
-                    val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                    val doc = builder.parse(url)
-
-                    return@async doc.documentElement.nodeName.uppercase() == "RSS"
-                }catch (exc : Exception){
-                    return@async false
-                }
-            }
-
-            return result.await()
-        }
-    }
 }

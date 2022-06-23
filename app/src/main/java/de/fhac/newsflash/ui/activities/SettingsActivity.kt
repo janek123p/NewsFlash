@@ -1,22 +1,19 @@
 package de.fhac.newsflash.ui.activities
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.webkit.URLUtil
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import de.fhac.newsflash.R
 import de.fhac.newsflash.ui.adapter.RSSFeedsAdapter
 import de.fhac.newsflash.ui.adapter.StringAdapterWithFilter
 import de.fhac.newsflash.data.controller.SourceController
-import de.fhac.newsflash.data.models.RSSSource
 import de.fhac.newsflash.databinding.ActivitySettingsBinding
 import de.fhac.newsflash.ui.UIExtensions.Companion.setOnClickListenerWithAnimation
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.streams.toList
 
@@ -102,10 +99,10 @@ class SettingsActivity : AppCompatActivity() {
     private fun onRSSURLChanged() {
         val url = binding.txtRssLink.text.toString()
         GlobalScope.launch {
-            if (url.isEmpty() || RSSSource.isValidRSSLink(url)) {
+            if (url.isEmpty() || URLUtil.isValidUrl(url)) {
                 runOnUiThread { clearRSSLinkError() }
             } else {
-                runOnUiThread { setRSSLinkError(getString(R.string.invalid_rss_feed)) }
+                runOnUiThread { setRSSLinkError(getString(R.string.invalid_url)) }
             }
         }
     }

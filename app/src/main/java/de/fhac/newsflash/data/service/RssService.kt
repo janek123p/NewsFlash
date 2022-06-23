@@ -1,15 +1,18 @@
 package de.fhac.newsflash.data.service
 
 import android.util.Xml
+import android.webkit.URLUtil
 import de.fhac.newsflash.data.models.News
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.xml.parsers.DocumentBuilderFactory
 
 object RssService {
 
@@ -44,6 +47,14 @@ object RssService {
         parser.setInput(URL(url).openConnection().getInputStream(), "UTF-8");
         parser.nextTag();
 
+
+        try{
+            parser.require(XmlPullParser.START_TAG, null, "rss");
+        }catch(e: Exception){
+            throw Exception("Url ist kein RSS-Feed")
+        }
+
+
         return reader(parser);
     }
 
@@ -51,7 +62,6 @@ object RssService {
      * Parse the meta information.
      */
     private fun readMeta(parser: XmlPullParser): String? {
-
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue;

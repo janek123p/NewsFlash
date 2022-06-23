@@ -73,7 +73,9 @@ class FilterHandler(val mainActivity: MainActivity?) : Fragment() {
             fun updateSources(sources: MutableList<ISource>?) {
                 GlobalScope.launch {
                     sourceFilterAdapter.sources = sources
-                    sourceFilterAdapter.notifyDataSetChanged()
+                    mainActivity.runOnUiThread{
+                        sourceFilterAdapter.notifyDataSetChanged()
+                    }
                 }
             }
 
